@@ -22,6 +22,6 @@ export function learningSummary(state:Awaited<ReturnType<typeof learningState>>)
  enabled:true,mode:state.active?'active':'shadow',algorithm:state.working.algorithm,feedbackCount:state.rows.length,trainingCases:state.working.examples.length,
  workingVersion:state.working.id,activeVersion:state.active?.id||null,evaluation:state.working.evaluation,
  versions:state.versions.map(v=>({id:v.id,createdAt:v.created_at,evaluation:v.artifact.evaluation})),
- recent:state.rows.slice(0,15).map(r=>({id:r.id,sourceId:r.source_id,headline:r.source_snapshot.headline,decision:r.decision,reason:r.reason,score:r.score,note:r.note,at:r.created_at})),
+ recent:state.rows.slice(0,15).map(r=>({id:r.id,sourceId:r.source_id,headline:r.source_snapshot.headline,decision:r.decision,reason:r.reason,score:r.score,note:r.note,at:r.created_at,hasAnalysis:!!r.analysis_snapshot||!!r.source_snapshot.deal_id})),
 };}
 export function suggest(state:Awaited<ReturnType<typeof learningState>>,text:string){return {version:(state.active||state.working).id,...predict(text,(state.active||state.working).examples),shadow:state.active?predict(text,state.working.examples):null};}

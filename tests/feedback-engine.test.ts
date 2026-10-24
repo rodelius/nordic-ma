@@ -71,3 +71,11 @@ test('FICC assessment uses confirmed funding, settlement and desired proceeds, n
  const conflict=assessFicc({...d,evidence:[...d.evidence,fact('Settlement currency','USD')]});assert.equal(conflict.buyerFx,'Unclear');assert(conflict.questions.some(q=>q.includes('Conflicting')));
  const fund=assessFicc({...seed[0],evidence:[fact('Consideration currency','NOK'),fact('Fund denomination','EUR')]});assert.equal(fund.buyerFx,'Unclear');assert(fund.angles.some(a=>a.includes('hypothesis')));
 });
+
+
+test('JSON correction cues enter comparable-case memory without copying reviewed facts into source features',()=>{
+ const rows=[0,1,2].map(i=>({...label(i),analysis_snapshot:{pair:'USD/NOK',buyerFx:'No'},changed_fields:['buyerFx','evidence','target','source']}));
+ const cases=currentCases(rows);assert.deepEqual(cases[0].correctionFields,['buyerFx','evidence']);
+ const result=predict(text,cases);assert.deepEqual(result.neighbors[0].correctionFields,['buyerFx','evidence']);
+ assert(!('analysis_snapshot'in result.neighbors[0]));assert(!cases[0].features.includes('USD/NOK'));
+});

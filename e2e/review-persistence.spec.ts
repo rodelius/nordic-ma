@@ -1,0 +1,38 @@
+import {test,expect,type Page} from '@playwright/test';
+import {previewAssessment} from '../lib/review-analysis';
+const sourceId='persistent-source';
+async function setup(page:Page,request:import('@playwright/test').APIRequestContext){
+ const baseline=await request.get('/api/deals').then(r=>r.json());
+ let source={id:sourceId,headline:'Persistent review fixture',url:'https://news.cision.com/issuer/r/persistent',published_at:new Date().toISOString(),excerpt:'Source evidence.',source:'Cision',state:'pending',review_version:0,analysis:null as Record<string,unknown>|null,deal_id:null as string|null};
+ let draft:null|{draft_text:string;note:string;assessment:unknown;base_version:number;revision:number}=null,fail=false;
+ const messages:Record<string,unknown>[]=[];
+ const learning=()=>({enabled:true,mode:'shadow',algorithm:'ficc-cases-v1',feedbackCount:source.analysis?1:0,trainingCases:source.analysis?1:0,workingVersion:'a'.repeat(64),activeVersion:null,evaluation:{eligible:false,reason:'More labels needed',trainingCount:0,holdoutCount:0,scoredHoldouts:0,precisionAt3:null,baselinePrecisionAt3:null},versions:[],recent:source.analysis?[{id:'f',sourceId,headline:source.headline,decision:'useful',reason:'approved',score:source.analysis.score,note:'Reviewed',at:new Date().toISOString(),hasAnalysis:true}]:[]});
+ await page.route('**/api/deals',r=>r.fulfill({json:{...baseline,mode:'pilot',stage:2}}));
+ await page.route('**/api/pilot',r=>r.fulfill({json:{enabled:true,canReview:true,items:source.state==='pending'?[source]:[],runs:[],deliveries:[],monitoring:false,notifications:false,learning:learning()}}));
+ await page.route('**/api/reviews**',async r=>{
+  if(r.request().method()==='GET')return r.fulfill({json:{source,draft,assessment:draft?.assessment||null,revisions:[]}});
+  const b=r.request().postDataJSON();messages.push(b);
+  if(fail)return r.fulfill({status:400,json:{error:'Invalid country: confirm the Nordic connection'}});
+  if(b.action==='draft'){draft={draft_text:b.text,note:b.note,assessment:previewAssessment(b.text),base_version:source.review_version,revision:(draft?.revision||0)+1};return r.fulfill({json:{saved:true,draftRevision:draft.revision,assessment:draft.assessment,message:'Draft and assessment saved.'}});}
+  source={...source,state:'approved',review_version:source.review_version+1,analysis:JSON.parse(b.text),deal_id:'alpha'};draft=null;return r.fulfill({json:{saved:true,message:'Assessment correction saved. No alert sent.'}});
+ });
+ return {baseline,messages,setFail:(v:boolean)=>{fail=v;},approve:()=>{source={...source,state:'approved',review_version:1,analysis:{...baseline.deals[0],target:'Saved original assessment',score:4},deal_id:'alpha'};}};
+}
+async function alerts(page:Page,mobile:boolean){await page.goto('/');await expect(page.getByText('PILOT / STAGE 2',{exact:true})).toBeVisible();if(mobile)await page.getByLabel('Open navigation').click();await page.getByRole('button',{name:/^Alerts & catalysts/}).click();}
+test('review pane saves and restores JSON drafts and visibly reports missing confirmation and server errors',async({page,request},info)=>{
+ const state=await setup(page,request);await alerts(page,info.project.name==='mobile');
+ const button=page.getByRole('button',{name:'Review',exact:true});await button.scrollIntoViewIfNeeded();await page.evaluate(()=>document.addEventListener('click',e=>{if((e.target as HTMLElement).textContent==='Review')(window as unknown as {reviewClickY:number}).reviewClickY=scrollY;},true));await button.click();const scroll=await page.evaluate(()=>(window as unknown as {reviewClickY:number}).reviewClickY);
+ const dialog=page.getByRole('dialog',{name:'Review announcement'});await expect(dialog).toBeVisible();expect(Math.abs((await page.evaluate(()=>scrollY))-scroll)).toBeLessThan(2);
+ const draftText=JSON.stringify({...state.baseline.deals[0],evidence:[{label:'Consideration type',value:'CASH',kind:'Fact'},{label:'Consideration currency',value:'SEK',kind:'Fact'},{label:'Buyer funding currency',value:'EUR',kind:'Fact'}]});
+ await page.getByLabel('Reviewed analysis (JSON)').fill(draftText);await page.getByRole('button',{name:'Approve reviewed update'}).click();await expect(dialog.getByRole('alert')).toContainText('Confirm that you checked');expect(state.messages.length).toBe(0);
+ await page.getByRole('button',{name:'Save draft',exact:true}).click();await expect(dialog.getByRole('status')).toContainText('Draft and assessment saved');await page.getByLabel('Close review pane').click();
+ await page.getByRole('button',{name:'Review',exact:true}).click();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(draftText);await expect(dialog.getByRole('status')).toContainText('restored');await expect(dialog.getByRole('heading',{name:'Saved draft FICC assessment'})).toBeVisible();await page.getByLabel('Reviewed analysis (JSON)').fill('{"incomplete":true}');
+ await page.getByLabel(/I checked the source/).check();state.setFail(true);await page.getByRole('button',{name:'Approve reviewed update'}).click();await expect(dialog.getByRole('alert')).toContainText('Invalid country');await expect(dialog.getByRole('alert')).toBeInViewport();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue('{"incomplete":true}');if(info.project.name==='desktop')await page.screenshot({path:'/tmp/review-fix-desktop.png'});
+});
+test('history opens the saved JSON in the right pane and persists assessment corrections across reopening',async({page,request},info)=>{
+ const state=await setup(page,request);state.approve();await alerts(page,info.project.name==='mobile');await page.getByText('Latest 15 feedback decisions',{exact:true}).click();await page.getByRole('button',{name:'Edit saved assessment'}).click();
+ const dialog=page.getByRole('dialog',{name:'Edit saved assessment'});await expect(dialog).toBeVisible();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(/Saved original assessment/);
+ const changed={...state.baseline.deals[0],target:'Corrected saved assessment',score:2};await page.getByLabel('Reviewed analysis (JSON)').fill(JSON.stringify(changed));await page.getByLabel('Why are you correcting this assessment?').fill('Corrected the payment and financing assessment.');await page.getByLabel(/I checked the source/).check();await page.getByRole('button',{name:'Save assessment correction'}).click();await expect(dialog).toHaveCount(0);
+ expect(state.messages.at(-1)).toMatchObject({action:'submit',version:1,sourceId});expect(JSON.parse(state.messages.at(-1)!.text as string).score).toBe(2);
+ await page.getByRole('button',{name:'Edit saved assessment'}).click();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(/Corrected saved assessment/);
+});

@@ -28,12 +28,12 @@ export async function deliverNotifications(){
    const {data:member}=sub?await db.from('pilot_members').select('enabled').eq('user_id',sub.user_id).single():{data:null};
    if(typeof job.payload.expiresAt!=='string'||!Number.isFinite(Date.parse(job.payload.expiresAt))||Date.parse(job.payload.expiresAt)<=Date.now()){status='dead';reason='Alert expired before delivery';}
    else if(!sub?.enabled||!member?.enabled){status='dead';reason='Subscription or membership disabled';}
-   else{await webpush.sendNotification(subscription,JSON.stringify({...job.payload,tag:job.id}),{TTL:3600,timeout:10000});sent++;}
+   else{const {data:lease,error:leaseError}=await db.from('notification_deliveries').select('status,lease_token').eq('id',job.id).single();if(leaseError)throw Error('Could not verify delivery lease');if(lease.status!=='sending'||lease.lease_token!==job.lease_token)return;await webpush.sendNotification(subscription,JSON.stringify({...job.payload,tag:job.id}),{TTL:3600,timeout:10000});sent++;}
   }catch(e){const code=(e as {statusCode?:number}).statusCode;terminal=code===404||code===410||job.attempts>=6;status=terminal?'dead':'retry';reason=code?`Push HTTP ${code}`:'Push validation or transport failure';failed++;
    if(code===404||code===410)await db.from('push_subscriptions').update({enabled:false}).eq('id',job.subscription_id);
   }
   // A stale worker cannot acknowledge another worker's renewed lease.
-  const result=await db.from('notification_deliveries').update({status,last_error:reason,sent_at:status==='sent'?new Date().toISOString():null,lease_until:null,next_attempt_at:new Date(Date.now()+Math.min(3600,30*2**job.attempts)*1000).toISOString()}).eq('id',job.id).eq('lease_token',job.lease_token);
+  const result=await db.from('notification_deliveries').update({status,last_error:reason,sent_at:status==='sent'?new Date().toISOString():null,lease_until:null,next_attempt_at:new Date(Date.now()+Math.min(3600,30*2**job.attempts)*1000).toISOString()}).eq('id',job.id).eq('lease_token',job.lease_token).eq('status','sending');
   if(result.error)throw Error('Notification acknowledgment failed; delivery may be retried');
  }));
  return {enabled:true,sent,failed};
