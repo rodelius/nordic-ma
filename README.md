@@ -2,6 +2,10 @@
 
 A responsive Next.js / React / TypeScript prototype implementing the supplied Nordic M&A / FICC brief. This project is separate from the legacy `/workspace/cards` checkout. The original brief is in [docs/product-brief.md](docs/product-brief.md).
 
+## Review persistence fixes
+
+Branch **fix-review-persistence** adds private saved drafts, right-side review/dismissal panes, visible validation, full saved-assessment corrections and revision history. Apply migration **005** before deploying the new editor. Follow [the rollout and learning-impact guide](docs/review-fixes.md).
+
 ## Feedback-learning engine (review branch)
 
 Branch **ficc-feedback-engine** adds structured reviewer feedback, a case-based priority model, versioned evaluation/promotion, corrections/exclusions, and an evidence-based FICC hypothesis check. Begin in shadow mode after migration 004. Follow [the deployment and validation guide](docs/feedback-engine.md). Existing source screening, verified deal facts and approval/notification rules are preserved.

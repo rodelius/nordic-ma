@@ -8,6 +8,7 @@ test('Stage 2 source review requires confirmation and sends the chosen transacti
  if(r.request().method()==='POST'){received=r.request().postDataJSON();approved=true;return r.fulfill({json:{material:true,queued:false,dealId:'test-deal'}});}
  return r.fulfill({json:{enabled:true,canReview:true,monitoring:false,notifications:false,items:approved?[]:[source],runs:[],deliveries:[],subscriptions:[]}});
  });
+ await page.route('**/api/reviews**',async r=>{if(r.request().method()==='POST'){received=r.request().postDataJSON();approved=true;return r.fulfill({json:{saved:true,message:'Reviewed analysis and assessment saved.'}});}return r.fulfill({json:{source:{...source,state:'pending',review_version:0,analysis:null,deal_id:null},draft:null,assessment:null,revisions:[]}});});
  await openAlerts(page,info.project.name==='mobile');await expect(page.getByRole('heading',{name:'Cision announcement review'})).toBeVisible();
  await expect(page.getByRole('button',{name:'Deliver queued alerts'})).toBeDisabled();
  await page.getByRole('button',{name:'Review',exact:true}).click();
@@ -16,7 +17,7 @@ test('Stage 2 source review requires confirmation and sends the chosen transacti
  await page.getByRole('button',{name:'Approve reviewed update'}).click();expect(approved).toBe(false);
  await page.getByLabel(/I checked the source/).check();await page.getByRole('button',{name:'Approve reviewed update'}).click();
  await expect(page.getByText('No pending candidates. Scan the source to check for recent announcements.')).toBeVisible();
- expect(received).toMatchObject({action:'approve',sourceId:'fixture-source',existingId:null,deal:{target:'Reviewed UI fixture'}});
+ expect(received).toMatchObject({action:'submit',sourceId:'fixture-source',existingId:null});expect(JSON.parse((received as unknown as {text:string}).text).target).toBe('Reviewed UI fixture');
 });
 test('Stage 2 readers see source status but cannot approve or run source scans',async({page,request},info)=>{
  const baseline=await request.get('/api/deals').then(r=>r.json());

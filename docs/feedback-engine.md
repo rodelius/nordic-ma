@@ -19,7 +19,7 @@ The model compares fixed financial/process text signals (funding, financing, con
 
 ## Financial assessment
 
-In an open review, click **Assess FICC hypotheses**. This deterministic evidence check is separate from the learned ranking. It requires exact, confirmed evidence values; it does not treat country, reporting currency, an assumed fund denomination, or a historical acquisition mention as proof of FX.
+In an open review, click **Assess & save draft**. This deterministic evidence check is separate from the learned ranking. It requires exact, confirmed evidence values; it does not treat country, reporting currency, an assumed fund denomination, or a historical acquisition mention as proof of FX.
 
 Use evidence labels such as:
 
@@ -53,7 +53,7 @@ Reviewer privileges are required to record/correct labels, save models or change
 2. Dismiss a duplicate or stale candidate. Confirm it is labelled excluded; it should not add a usable training case.
 3. Approve a relevant source after reviewing facts, Nordic connection and score. An optional review note records why it is useful or what analysis you corrected. Approval and feedback are written in the same database transaction; a failed feedback write rolls back the review.
 4. Review at least three comparable but distinct situations over time. Inspect their shadow priorities and comparable-case explanations. Unrelated items and cold-start cases must remain neutral. Suggestions may be wrong; retain your original judgment and record corrections.
-5. From a recent feedback item, choose **Correct or exclude feedback**. A note is required. This appends a correction and replaces only that source's latest training label; it does not change a tracked deal, reverse its approval or recall a notification. Exclusion keeps the audit trail but removes the case from future training.
+5. From a recent feedback item, choose **Correct or exclude feedback** for labels, or **Edit saved assessment** to revise its full JSON after applying migration 005 (see [review fixes](review-fixes.md)). A note is required. This appends a correction and replaces only that source's latest training label; it does not change a tracked deal, reverse its approval or recall a notification. Exclusion keeps the audit trail but removes the case from future training.
 6. Confirm the queue stays newest-first in shadow mode. Notification rules and FICC scores must not change because of a learned priority.
 
 Earlier approvals/dismissals are not retrospectively labelled: an unexplained dismissal could have meant stale, duplicate or non-Nordic. Only new explicit feedback enters the dataset. Historical backfilling is a separate reviewed task. The working model uses the latest label for each of up to 500 reviewed sources; duplicate/stale/uncertain/excluded cases are omitted. Older audit rows stay in PostgreSQL. Only the latest 15 labels are shown in this first UI; full history remains in the database.
@@ -75,3 +75,5 @@ The existing **Draft with AI** feature still needs your configured `AI_API_KEY` 
 ## Remaining limitations
 
 This is a transparent first learning engine over fixed signal categories. It does not yet provide semantic embeddings, issuer identity resolution, currency/ownership reference data, payoff/pricing models, trade execution, online weight optimization, personal models, full historical backtesting, outcomes-based commercial conversion tracking, or automatic source-filter deployment. Feedback selection is biased toward the reviewed queue; unreviewed and filtered-out news is not ground truth. Precision@3 is limited to the held-out labelled cases and does not establish recall across all Nordic M&A. Source evidence and human treasury confirmation remain essential.
+
+For persistent draft saving, right-side editors, before/after JSON revisions and the exact learning impact of edited assessments, see [review-fixes.md](review-fixes.md). Apply migration 005 to use those fixes.
