@@ -1,0 +1,26 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { inWindow, sections, parseEvent, parseDeal, ranked } from '../lib/model';
+import { seed } from '../lib/seed';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+test('window excludes future, invalid and stale sources',()=>{const n=Date.now();assert(inWindow(new Date(n-1000).toISOString(),1,n));assert(!inWindow(new Date(n+1000).toISOString(),1,n));assert(!inWindow('invalid',24,n));assert(!inWindow(new Date(n-25*3600000).toISOString(),24,n));});
+test('ranking and brief preserve low priority and unchanged watchlist separately',()=>{const s=sections(seed,24);assert.equal(ranked(seed)[0].id,'alpha');assert(s.A.every(d=>d.score>=4&&d.status==='New'));assert(s.E.some(d=>d.id==='delta'));assert(s.D.some(d=>d.id==='epsilon'));assert(s.C.some(d=>d.id==='gamma'));assert(s.F.length<=5);assert(!s.F.some(d=>d.status==='Closed'));});
+const event={dealId:'alpha',headline:'A new bidder',delta:'New bidder entered the shortlist',stage:'Final bids',timestamp:new Date().toISOString(),sourceUrl:'https://example.com/release',type:'Process'};
+test('input rejects future timestamps and unsafe source schemes',()=>{assert.throws(()=>parseEvent({...event,sourceUrl:'http://example.com'}));assert.throws(()=>parseEvent({...event,timestamp:'2039-01-01'}));assert.throws(()=>parseEvent({...event,type:'Unverified type'}));assert.equal(parseEvent(event).stage,'Final bids');});
+test('new real transactions require Nordic connection and explicit evidence',()=>{assert.throws(()=>parseDeal({...seed[0],country:'France'}));assert.throws(()=>parseDeal({...seed[0],evidence:[]}));assert.throws(()=>parseDeal(seed[0]));const valid=parseDeal({...seed[0],source:{headline:'Supplied announcement',url:'https://example.com/release',timestamp:new Date().toISOString()}});assert.equal(valid.synthetic,false);assert.equal(valid.status,'New');});
+test('event journal deduplicates, preserves stale history and protects closed deals',async()=>{
+ const dir=mkdtempSync(join(tmpdir(),'ficc-test-'));process.env.DATA_DIR=dir;
+ const db=await import('../lib/store');
+ const a=db.addEvent(parseEvent(event));assert.equal(a.event?.material,true);
+ assert.equal(db.addEvent(parseEvent(event)).duplicate,true);
+ assert.equal(db.addEvent(parseEvent({...event,headline:'Older release',timestamp:'2020-01-01'})).event?.material,false);
+ assert.equal(db.deals().find(d=>d.id==='alpha')?.source.headline,event.headline);
+ assert.equal(db.addEvent(parseEvent({...event,delta:'No material update',headline:'No change'})).event?.material,false);
+ const closed=db.addEvent(parseEvent({...event,type:'Closed',headline:'Closed',delta:'Completed acquisition'}));assert.equal(closed.event?.material,true);
+ assert.equal(db.deals().find(d=>d.id==='alpha')?.status,'Closed');
+ assert.equal(db.addEvent(parseEvent({...event,headline:'Reopening rumour',delta:'New rumour'})).event?.material,false);
+ assert.equal(db.events().length,5);
+ rmSync(dir,{recursive:true,force:true});
+});

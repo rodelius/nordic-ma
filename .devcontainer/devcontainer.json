@@ -1,0 +1,27 @@
+{
+  "name": "Nordic FICC — browser workspace",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Nordic FICC application",
+      "onAutoForward": "openPreview",
+      "protocol": "http"
+    }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
+  },
+  "postCreateCommand": "npm ci --no-audit --no-fund",
+  "postStartCommand": "node .devcontainer/start.mjs",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
