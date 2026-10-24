@@ -2,7 +2,7 @@ name: Verify pilot and demo
 on:
   pull_request:
   push:
-    branches: [main, production-pilot-stage-1]
+    branches: [main, production-pilot-stage-1, production-pilot-stage-2]
 permissions:
   contents: read
 jobs:

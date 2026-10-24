@@ -19,5 +19,10 @@ try{
  for(const path of ['/api/deals','/api/brief','/api/readiness','/api/push'])assert.equal((await request(path)).status,401,path);
  assert.equal((await request('/api/events',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:'{}'})).status,401);
  });
+ await run({APP_MODE:'pilot',PILOT_STAGE:'2',APP_URL:'https://pilot.example.com',SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test_public_key_12345',CRON_SECRET:'S'.repeat(40),MONITORING_ENABLED:'false',NOTIFICATIONS_ENABLED:'false'},async request=>{
+ assert.equal((await request('/api/pilot')).status,401);
+ assert.equal((await request('/api/jobs/run')).status,401);
+ const job=await request('/api/jobs/run',{headers:{Authorization:'Bearer '+'S'.repeat(40)}});assert.equal(job.status,200);const status=await job.json();assert.equal(status.scan.enabled,false);assert.equal(status.delivery.enabled,false);
+ });
  console.log('Pilot HTTP gates passed: missing config fails closed, signed-out login redirect, private responses, API denial, bearer bypass denial and no SQLite fallback. Live provider sign-in is not tested.');
 }finally{rmSync(root,{recursive:true,force:true});}

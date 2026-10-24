@@ -2,9 +2,9 @@
 
 A responsive Next.js / React / TypeScript prototype implementing the supplied Nordic M&A / FICC brief. This project is separate from the legacy `/workspace/cards` checkout. The original brief is in [docs/product-brief.md](docs/product-brief.md).
 
-## Production pilot (review stage)
+## Production pilot
 
-The **production-pilot-stage-1** branch adds invite-only Supabase sign-in and read-only persistent storage for an empty hosted pilot. Follow [the staged setup and validation checklist](docs/production-pilot.md). Live ingestion and notifications remain disabled until the next reviewed stage. Local/Codespaces demo mode keeps the existing five views and SQLite data.
+Stage 1 provides invite-only Supabase sign-in and storage; its setup is in [production-pilot.md](docs/production-pilot.md). The **production-pilot-stage-2** branch adds general Cision source candidates, human approval, tracked deal updates and a durable notification outbox. Follow [the staged live-pilot validation guide](docs/live-pilot.md). Collection and delivery default to off until explicitly enabled in Vercel. The local/Codespaces demo remains available unchanged.
 
 ## Open in a browser (GitHub Codespaces)
 
@@ -36,15 +36,19 @@ For production-mode local verification: `npm run build && npm start`. The dashbo
 
 ## Configure securely
 
+For the hosted pilot, follow [live-pilot.md](docs/live-pilot.md). The bearer-token/direct-write descriptions below apply to local demo mode; hosted approval uses verified member/reviewer sessions and an outbox.
+
 Copy `.env.example` to `.env.local` and enter values locally or through your deployment's secret settings. Do not place secrets in browser bundles, chat, Git or source events.
 
 `INGEST_TOKEN` protects write and AI endpoints. Supply `Authorization: Bearer <token>` to them. The analyst input form keeps its token in memory only. AI extraction additionally needs `AI_API_KEY` with access to the configured `AI_MODEL` (default `gpt-4.1-mini`). It calls `https://api.openai.com/v1/chat/completions`; no provider connection or extraction accuracy has been verified in this environment because no key was supplied. Pasted text is sent to that provider only when the user chooses Extract draft.
 
 For push, generate a VAPID keypair with `npx web-push generate-vapid-keys`, store `VAPID_PRIVATE_KEY` securely, and set `VAPID_PUBLIC_KEY` and a real `VAPID_SUBJECT` (`mailto:` or HTTPS contact). Restart the server after changing environment values. Use HTTPS in deployment. On iOS 16.4+, add the PWA to the Home Screen, open it there, then enable alerts. Push delivery has not been tested end to end without VAPID configuration and a device subscription.
 
-On material updates to deals scored 3+, the server attempts delivery to subscribed browsers, including closed/failed events. Synthetic alerts are prefixed DEMO. There is no retry queue, per-user delivery isolation, or notification preferences yet. Failed push attempts do not roll back the ingested event and are reported in the API result; replaying a duplicate does not resend. Add a durable outbox before relying on delivery guarantees.
+In local demo mode, on material updates to deals scored 3+, the server attempts delivery to subscribed browsers, including closed/failed events. Synthetic alerts are prefixed DEMO. There is no retry queue, per-user delivery isolation, or notification preferences yet. Failed push attempts do not roll back the ingested event and are reported in the API result; replaying a duplicate does not resend. Add a durable outbox before relying on delivery guarantees.
 
-## Ingestion API
+## Local demo ingestion API
+
+The direct bearer-token writes below are for local demo mode. Hosted Stage 2 uses authenticated reviewer actions in **Alerts & catalysts**, not `/api/events` or direct `POST /api/deals`. Read APIs remain available to invited pilot users.
 
 `GET /api/deals` returns transactions, event history and last event-ingestion time. `GET /api/brief?hours=24` returns the A–F brief and complete rows. Invalid windows return 400.
 
@@ -70,7 +74,7 @@ Use actual publication timestamps. Allowed event types: Process, Financing, Regu
 
 ## Scheduled monitoring
 
-No live sources, search service or scheduler are configured. `scripts/ingest.mjs` is a connector for an authorized **structured JSON event feed**, not a news scraper. Set `EVENT_FEED_URL`, `APP_URL`, `INGEST_TOKEN` in the scheduler environment and run:
+The hosted Stage 2 branch includes the verified general Cision RSS connector and a gated daily scheduler; see [the activation guide](docs/live-pilot.md). The generic JSON feed script below is a local-demo tool, not the hosted source worker. `scripts/ingest.mjs` is a connector for an authorized **structured JSON event feed**, not a news scraper. Set `EVENT_FEED_URL`, `APP_URL`, `INGEST_TOKEN` in the scheduler environment and run:
 
 ```sh
 node scripts/ingest.mjs
@@ -93,4 +97,6 @@ Unit tests exercise ranking, time windows, payload rejection, brief classificati
 
 ## Deployment boundary
 
-This prototype uses **SQLite on persistent disk**, not Supabase. Run it on a single Node server with a persistent volume for evaluation. Do not deploy unchanged to ephemeral Vercel functions: migrate storage to PostgreSQL/Supabase and use a managed job runner first. Add user authentication/authorization, tenant-isolated subscriptions, audit permissions, rate limits, provider cost limits, durable notification retries, source connectors and historical precision/recall validation before live use. Read endpoints are currently public; protect the whole deployment before entering non-public data. Fonts have system fallbacks if Google Fonts cannot load. Source repository: [rodelius/nordic-ma](https://github.com/rodelius/nordic-ma). A Codespace, v0 project and Vercel deployment have not been provisioned by this task.
+Hosted pilot mode uses Supabase PostgreSQL and invite-only sessions; local demo mode uses SQLite on persistent disk. Vercel deployments fail closed unless `APP_MODE=pilot` and the required configuration are present. Use the staged guides for migration, server-only credentials, reviewer access and notification validation. Preserve local SQLite files when working on the hosted pilot.
+
+This is a single shared pilot workspace for invited users. Cision is one bounded issuer-announcement source, not comprehensive Nordic news coverage. Its default daily schedule is not real-time monitoring. Collection and delivery remain opt-in configuration changes after validation. Before expanding the pilot, add broader source coverage, production abuse controls and further historical signal-quality evaluation. The source repository is [rodelius/nordic-ma](https://github.com/rodelius/nordic-ma); the owner has validated the Stage 1 deployment, while Stage 2 production scans and device push still require the live-pilot checklist.

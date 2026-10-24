@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextRequest, NextResponse } from 'next/server';
+import { stage2Enabled,jobsAuthorized } from './lib/live-config';
 import { pilotConfig, pilotMode } from './lib/pilot-config';
 function privateResponse(response:NextResponse){response.headers.set('Cache-Control','private, no-store');return response;}
 export async function proxy(request:NextRequest){
@@ -7,6 +8,7 @@ export async function proxy(request:NextRequest){
  if(pilotMode()==='demo')return NextResponse.next();
  const config=pilotConfig();
  const path=request.nextUrl.pathname;
+ if(path==='/api/jobs/run')return jobsAuthorized(request)?privateResponse(NextResponse.next()):privateResponse(NextResponse.json({error:'Job authorization required'},{status:401}));
  if(path==='/login'||path==='/auth/callback'||path==='/auth/signout')return privateResponse(NextResponse.next());
  let response=NextResponse.next({request});
  const client=createServerClient(config.url,config.key,{cookies:{
@@ -19,7 +21,7 @@ export async function proxy(request:NextRequest){
  if(memberError)return privateResponse(NextResponse.json({error:'Pilot access could not be verified. Check database setup.'},{status:503}));
  if(!member)return privateResponse(path.startsWith('/api/')?NextResponse.json({error:'Pilot access required'},{status:403}):NextResponse.redirect(new URL('/login?status=not-authorized',config.appUrl)));
  // Stage 1 is deliberately read-only; bearer tokens cannot bypass this gate.
- if(path.startsWith('/api/')&&!['GET','HEAD'].includes(request.method))return privateResponse(NextResponse.json({error:'Stage 1 is read-only. Ingestion and notifications require the next validation stage.'},{status:403}));
+ if(path.startsWith('/api/')&&!['GET','HEAD'].includes(request.method)&&!(stage2Enabled()&&['/api/pilot','/api/push','/api/analyze'].includes(path)))return privateResponse(NextResponse.json({error:'Stage 1 is read-only. Ingestion and notifications require the next validation stage.'},{status:403}));
  return privateResponse(response);
  }catch{return privateResponse(NextResponse.json({error:'Pilot configuration is incomplete. Follow docs/production-pilot.md.'},{status:503}));}
 }
