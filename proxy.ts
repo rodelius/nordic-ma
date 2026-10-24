@@ -21,7 +21,7 @@ export async function proxy(request:NextRequest){
  if(memberError)return privateResponse(NextResponse.json({error:'Pilot access could not be verified. Check database setup.'},{status:503}));
  if(!member)return privateResponse(path.startsWith('/api/')?NextResponse.json({error:'Pilot access required'},{status:403}):NextResponse.redirect(new URL('/login?status=not-authorized',config.appUrl)));
  // Stage 1 is deliberately read-only; bearer tokens cannot bypass this gate.
- if(path.startsWith('/api/')&&!['GET','HEAD'].includes(request.method)&&!(stage2Enabled()&&['/api/pilot','/api/push','/api/analyze'].includes(path)))return privateResponse(NextResponse.json({error:'Stage 1 is read-only. Ingestion and notifications require the next validation stage.'},{status:403}));
+ if(path.startsWith('/api/')&&!['GET','HEAD'].includes(request.method)&&!(stage2Enabled()&&['/api/pilot','/api/push','/api/analyze','/api/learning'].includes(path)))return privateResponse(NextResponse.json({error:'Stage 1 is read-only. Ingestion and notifications require the next validation stage.'},{status:403}));
  return privateResponse(response);
  }catch{return privateResponse(NextResponse.json({error:'Pilot configuration is incomplete. Follow docs/production-pilot.md.'},{status:503}));}
 }
