@@ -59,3 +59,22 @@ test('guided review preserves empty facts, shows original and learned score, and
  await dialog.getByLabel(/I checked the source/).check();await dialog.getByLabel('Open next item after approval').check();await dialog.getByRole('button',{name:'Approve reviewed update'}).click();await expect(dialog).toHaveCount(0);
  const body=state.messages.at(-1)!;expect(JSON.parse(body.text as string)).toMatchObject({target:'',sector:'',score:2});expect(body.reviewInput).toMatchObject({original:{target:''},suggestion:{score:4}});
 });
+
+test('review actions stay inside the dialog and respond after long-form scrolling',async({page,request},info)=>{
+ const state=await setup(page,request);await alerts(page,info.project.name==='mobile');await page.getByRole('button',{name:'Review',exact:true}).click();
+ const dialog=page.getByRole('dialog',{name:'Review announcement'}),body=dialog.locator('.review-drawer-body'),footer=dialog.locator('.review-drawer-footer');
+ await expect(footer).toBeVisible();await page.getByRole('button',{name:'Advanced JSON',exact:true}).click();
+ await page.getByLabel('Reviewed analysis (JSON)').fill(JSON.stringify({...state.baseline.deals[0],rationale:'Long source review. '.repeat(150)}));
+ for(const edge of ['top','bottom'] as const){
+  await body.evaluate((e,edge)=>{e.scrollTop=edge==='top'?0:e.scrollHeight;},edge);
+  const geometry=await dialog.evaluate(d=>{
+   const body=d.querySelector('.review-drawer-body')!.getBoundingClientRect(),footer=d.querySelector('.review-drawer-footer')!.getBoundingClientRect(),dialog=d.getBoundingClientRect();
+   const button=d.querySelector<HTMLButtonElement>('button[type="submit"]')!,b=button.getBoundingClientRect(),x=b.x+b.width/2,y=b.y+b.height/2;
+   return {contained:footer.top>=dialog.top&&footer.bottom<=dialog.bottom+1,separate:body.bottom<=footer.top+1,hittable:button.contains(document.elementFromPoint(x,y)),x,y};
+  });
+  expect(geometry.contained).toBe(true);expect(geometry.separate).toBe(true);expect(geometry.hittable).toBe(true);
+ }
+ const approve=dialog.getByRole('button',{name:'Approve reviewed update'});
+ if(info.project.name==='mobile'){const r=await approve.boundingBox();await page.touchscreen.tap(r!.x+r!.width/2,r!.y+r!.height/2);}else await approve.click();
+ await expect(dialog.getByRole('alert')).toContainText('Confirm that you checked');await expect(dialog.getByRole('alert')).toBeInViewport();expect(state.messages).toHaveLength(0);
+});
