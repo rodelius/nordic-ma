@@ -13,7 +13,7 @@ test('Stage 2 source review requires confirmation and sends the chosen transacti
  await expect(page.getByRole('button',{name:'Deliver queued alerts'})).toBeDisabled();
  await page.getByRole('button',{name:'Review',exact:true}).click();
  const analysis={...baseline.deals[0],synthetic:false,target:'Reviewed UI fixture',source:{headline:source.headline,url:source.url,timestamp:source.published_at}};
- await page.getByLabel('Reviewed analysis (JSON)').fill(JSON.stringify(analysis));
+ await page.getByRole('button',{name:'Advanced JSON',exact:true}).click();await page.getByLabel('Reviewed analysis (JSON)').fill(JSON.stringify(analysis));
  await page.getByRole('button',{name:'Approve reviewed update'}).click();expect(approved).toBe(false);
  await page.getByLabel(/I checked the source/).check();await page.getByRole('button',{name:'Approve reviewed update'}).click();
  await expect(page.getByText('No pending candidates. Scan the source to check for recent announcements.')).toBeVisible();

@@ -6,7 +6,7 @@ async function setup(page:Page,request:import('@playwright/test').APIRequestCont
  let source={id:sourceId,headline:'Persistent review fixture',url:'https://news.cision.com/issuer/r/persistent',published_at:new Date().toISOString(),excerpt:'Source evidence.',source:'Cision',state:'pending',review_version:0,analysis:null as Record<string,unknown>|null,deal_id:null as string|null};
  let draft:null|{draft_text:string;note:string;assessment:unknown;base_version:number;revision:number}=null,fail=false;
  const messages:Record<string,unknown>[]=[];
- const learning=()=>({enabled:true,mode:'shadow',algorithm:'ficc-cases-v1',feedbackCount:source.analysis?1:0,trainingCases:source.analysis?1:0,workingVersion:'a'.repeat(64),activeVersion:null,evaluation:{eligible:false,reason:'More labels needed',trainingCount:0,holdoutCount:0,scoredHoldouts:0,precisionAt3:null,baselinePrecisionAt3:null},versions:[],recent:source.analysis?[{id:'f',sourceId,headline:source.headline,decision:'useful',reason:'approved',score:source.analysis.score,note:'Reviewed',at:new Date().toISOString(),hasAnalysis:true}]:[]});
+ const learning=()=>({enabled:true,mode:'shadow',algorithm:'ficc-cases-v2',feedbackCount:source.analysis?1:0,trainingCases:source.analysis?1:0,workingVersion:'a'.repeat(64),activeVersion:null,evaluation:{eligible:false,reason:'More labels needed',trainingCount:0,holdoutCount:0,scoredHoldouts:0,precisionAt3:null,baselinePrecisionAt3:null},versions:[],recent:source.analysis?[{id:'f',sourceId,headline:source.headline,decision:'useful',reason:'approved',score:source.analysis.score,note:'Reviewed',at:new Date().toISOString(),hasAnalysis:true}]:[]});
  await page.route('**/api/deals',r=>r.fulfill({json:{...baseline,mode:'pilot',stage:2}}));
  await page.route('**/api/pilot',r=>r.fulfill({json:{enabled:true,canReview:true,items:source.state==='pending'?[source]:[],runs:[],deliveries:[],monitoring:false,notifications:false,learning:learning()}}));
  await page.route('**/api/reviews**',async r=>{
@@ -24,15 +24,38 @@ test('review pane saves and restores JSON drafts and visibly reports missing con
  const button=page.getByRole('button',{name:'Review',exact:true});await button.scrollIntoViewIfNeeded();await page.evaluate(()=>document.addEventListener('click',e=>{if((e.target as HTMLElement).textContent==='Review')(window as unknown as {reviewClickY:number}).reviewClickY=scrollY;},true));await button.click();const scroll=await page.evaluate(()=>(window as unknown as {reviewClickY:number}).reviewClickY);
  const dialog=page.getByRole('dialog',{name:'Review announcement'});await expect(dialog).toBeVisible();expect(Math.abs((await page.evaluate(()=>scrollY))-scroll)).toBeLessThan(2);
  const draftText=JSON.stringify({...state.baseline.deals[0],evidence:[{label:'Consideration type',value:'CASH',kind:'Fact'},{label:'Consideration currency',value:'SEK',kind:'Fact'},{label:'Buyer funding currency',value:'EUR',kind:'Fact'}]});
- await page.getByLabel('Reviewed analysis (JSON)').fill(draftText);await page.getByRole('button',{name:'Approve reviewed update'}).click();await expect(dialog.getByRole('alert')).toContainText('Confirm that you checked');expect(state.messages.length).toBe(0);
+ await page.getByRole('button',{name:'Advanced JSON',exact:true}).click();await page.getByLabel('Reviewed analysis (JSON)').fill(draftText);await page.getByRole('button',{name:'Approve reviewed update'}).click();await expect(dialog.getByRole('alert')).toContainText('Confirm that you checked');expect(state.messages.length).toBe(0);
  await page.getByRole('button',{name:'Save draft',exact:true}).click();await expect(dialog.getByRole('status')).toContainText('Draft and assessment saved');await page.getByLabel('Close review pane').click();
- await page.getByRole('button',{name:'Review',exact:true}).click();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(draftText);await expect(dialog.getByRole('status')).toContainText('restored');await expect(dialog.getByRole('heading',{name:'Saved draft FICC assessment'})).toBeVisible();await page.getByLabel('Reviewed analysis (JSON)').fill('{"incomplete":true}');
+ await page.getByRole('button',{name:'Review',exact:true}).click();await page.getByRole('button',{name:'Advanced JSON',exact:true}).click();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(draftText);await expect(dialog.getByRole('status')).toContainText('restored');await expect(dialog.getByRole('heading',{name:'Saved draft FICC assessment'})).toBeVisible();await page.getByLabel('Reviewed analysis (JSON)').fill('{"incomplete":true}');
  await page.getByLabel(/I checked the source/).check();state.setFail(true);await page.getByRole('button',{name:'Approve reviewed update'}).click();await expect(dialog.getByRole('alert')).toContainText('Invalid country');await expect(dialog.getByRole('alert')).toBeInViewport();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue('{"incomplete":true}');if(info.project.name==='desktop')await page.screenshot({path:'/tmp/review-fix-desktop.png'});
 });
 test('history opens the saved JSON in the right pane and persists assessment corrections across reopening',async({page,request},info)=>{
  const state=await setup(page,request);state.approve();await alerts(page,info.project.name==='mobile');await page.getByText('Latest 15 feedback decisions',{exact:true}).click();await page.getByRole('button',{name:'Edit saved assessment'}).click();
- const dialog=page.getByRole('dialog',{name:'Edit saved assessment'});await expect(dialog).toBeVisible();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(/Saved original assessment/);
+ const dialog=page.getByRole('dialog',{name:'Edit saved assessment'});await expect(dialog).toBeVisible();await page.getByRole('button',{name:'Advanced JSON',exact:true}).click();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(/Saved original assessment/);
  const changed={...state.baseline.deals[0],target:'Corrected saved assessment',score:2};await page.getByLabel('Reviewed analysis (JSON)').fill(JSON.stringify(changed));await page.getByLabel('Why are you correcting this assessment?').fill('Corrected the payment and financing assessment.');await page.getByLabel(/I checked the source/).check();await page.getByRole('button',{name:'Save assessment correction'}).click();await expect(dialog).toHaveCount(0);
  expect(state.messages.at(-1)).toMatchObject({action:'submit',version:1,sourceId});expect(JSON.parse(state.messages.at(-1)!.text as string).score).toBe(2);
- await page.getByRole('button',{name:'Edit saved assessment'}).click();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(/Corrected saved assessment/);
+ await page.getByRole('button',{name:'Edit saved assessment'}).click();await page.getByRole('button',{name:'Advanced JSON',exact:true}).click();await expect(page.getByLabel('Reviewed analysis (JSON)')).toHaveValue(/Corrected saved assessment/);
+});
+
+test('guided review preserves empty facts, shows original and learned score, and advances after approval',async({page,request},info)=>{
+ const state=await setup(page,request);const baseline=state.baseline.deals[0];
+ let source={id:sourceId,headline:'Guided review fixture',url:'https://news.cision.com/issuer/r/guided',published_at:new Date().toISOString(),excerpt:'Source excerpt for the analyst.',state:'pending',review_version:0,analysis:{...baseline,target:'',sector:''},deal_id:null};
+ let draft:Record<string,unknown>|null=null;
+ await page.route('**/api/reviews**',async route=>{
+  if(route.request().method()==='GET')return route.fulfill({json:{source,draft,assessment:null,revisions:[],suggestion:{score:4,version:'v2',mode:'shadow',explanation:'Three comparable reviewed groups support a score of 4.'}}});
+  const body=route.request().postDataJSON();state.messages.push(body);
+  if(body.action==='draft'){draft={draft_text:body.text,note:body.note,assessment:null,base_version:0,revision:1,review_input:body.reviewInput};return route.fulfill({json:{saved:true,draftRevision:1,assessment:null,message:'Draft saved.'}});}
+  return route.fulfill({json:{saved:true,message:'Assessment saved.'}});
+ });
+ await alerts(page,info.project.name==='mobile');await page.getByRole('button',{name:'Review',exact:true}).click();
+ const dialog=page.getByRole('dialog',{name:'Review announcement'});await expect(dialog.getByLabel('Target',{exact:true})).toHaveValue('');await expect(dialog.getByText('Pre-review: Empty / unknown',{exact:true}).first()).toBeVisible();
+ await expect(dialog.getByText('Three comparable reviewed groups support a score of 4.')).toBeVisible();
+ // The suggestion is prefilled; the extracted value remains visible as reference.
+ await expect(dialog.getByLabel('FICC relevance score',{exact:true})).toHaveValue('4');
+ await dialog.getByLabel('FICC relevance score',{exact:true}).selectOption('2');await dialog.getByLabel('Advisory hypothesis',{exact:true}).fill('Verify actual funding and payment timing.');
+ await dialog.getByRole('button',{name:'Save draft',exact:true}).click();await expect(dialog.getByRole('status')).toContainText('Draft saved');
+ await page.getByLabel('Close review pane').click();await page.getByRole('button',{name:'Review',exact:true}).click();
+ await expect(dialog.getByLabel('Target',{exact:true})).toHaveValue('');await expect(dialog.getByLabel('FICC relevance score',{exact:true})).toHaveValue('2');await expect(dialog.getByLabel('Advisory hypothesis',{exact:true})).toHaveValue('Verify actual funding and payment timing.');
+ await dialog.getByLabel(/I checked the source/).check();await dialog.getByLabel('Open next item after approval').check();await dialog.getByRole('button',{name:'Approve reviewed update'}).click();await expect(dialog).toHaveCount(0);
+ const body=state.messages.at(-1)!;expect(JSON.parse(body.text as string)).toMatchObject({target:'',sector:'',score:2});expect(body.reviewInput).toMatchObject({original:{target:''},suggestion:{score:4}});
 });

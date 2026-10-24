@@ -12,17 +12,20 @@ test('draft assessment is reproducible from incomplete JSON; source metadata is 
  assert.equal(previewAssessment('{unfinished'),null);
  const partial={evidence,status:'New'};assert.equal(previewAssessment(JSON.stringify(partial))?.buyerFx,'Potential FX');
  const d=canonicalAnalysis({...initial,source:{url:'wrong'}},source);assert.deepEqual(d.source,initial.source);
- assert.throws(()=>canonicalAnalysis({...initial,target:''},source),/target/);
+ assert.equal(canonicalAnalysis({...initial,target:'',sector:'',timing:''},source).target,'');
+ assert.throws(()=>canonicalAnalysis({...initial,score:0},source),/Score/);
+ assert.throws(()=>canonicalAnalysis({...initial,country:''},source),/Nordic/);
 });
 test('drafts, approved assessments and corrections survive reload without overwriting later news or sending correction alerts',async()=>{
  const db=new PGlite();try{
  await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth,public to authenticated,service_role;grant execute on function auth.uid() to authenticated,service_role;insert into auth.users values('${uid}'),('${other}'),('${reader}');`);
- for(const file of ['202610240001_pilot_foundation.sql','202610240002_live_pilot.sql','202610240003_cision_review.sql','202610240004_feedback_engine.sql','202610240005_review_persistence.sql'])await db.exec(await readFile(new URL('../supabase/migrations/'+file,import.meta.url),'utf8'));
+ for(const file of ['202610240001_pilot_foundation.sql','202610240002_live_pilot.sql','202610240003_cision_review.sql','202610240004_feedback_engine.sql','202610240005_review_persistence.sql','202610240006_guided_review.sql'])await db.exec(await readFile(new URL('../supabase/migrations/'+file,import.meta.url),'utf8'));
  await db.exec(`insert into public.pilot_members(user_id,can_review) values('${uid}',true),('${other}',true),('${reader}',false)`);
  await db.query(`insert into public.source_items(id,headline,url,published_at,excerpt,source) values($1,$2,$3,$4,'Source excerpt','Cision')`,[source.id,source.headline,source.url,source.published_at]);
  await db.exec(`set role authenticated;set request.jwt.claim.sub='${uid}'`);
  const draftText=JSON.stringify(initial),a=previewAssessment(draftText);
- await db.query('select public.save_review_draft($1,$2,$3,$4,0,0)',[source.id,draftText,'Initial notes',JSON.stringify(a)]);
+ const reviewInput={original:{...initial,target:''},suggestion:{score:4},version:null,mode:'shadow',explanation:'Comparable cases'};
+ await db.query('select public.save_review_draft($1,$2,$3,$4,0,0,$5)',[source.id,draftText,'Initial notes',JSON.stringify(a),JSON.stringify(reviewInput)]);
  let drafts=(await db.query<{draft_text:string;assessment:unknown;revision:number}>('select * from public.review_drafts')).rows;assert.equal(drafts[0].draft_text,draftText);assert.deepEqual(drafts[0].assessment,a);assert.equal(drafts[0].revision,1);
  await assert.rejects(db.query('select public.save_review_draft($1,$2,$3,null,0,0)',[source.id,'stale tab','']));
  await db.query('select public.save_review_draft($1,$2,$3,null,0,1)',[source.id,'{incomplete JSON','Keep these edits']);assert.equal((await db.query<{draft_text:string}>('select draft_text from public.review_drafts')).rows[0].draft_text,'{incomplete JSON');
@@ -39,6 +42,7 @@ test('drafts, approved assessments and corrections survive reload without overwr
  saved=(await db.query<typeof saved>('select * from public.source_items where id=$1',[source.id])).rows[0];assert.equal(saved.analysis.score,2);assert.equal((saved.assessment as {buyerFx:string}).buyerFx,'No cash FX established');
  feedback=(await db.query<typeof feedback>('select * from public.latest_review_feedback')).rows[0];assert.equal(feedback.analysis_snapshot.score,2);assert(feedback.changed_fields.includes('score'));assert(feedback.changed_fields.includes('evidence'));
  const revision=(await db.query<{previous_analysis:{score:number};analysis:{score:number}}>('select * from public.review_revisions where version=2')).rows[0];assert.equal(revision.previous_analysis.score,4);assert.equal(revision.analysis.score,2);
+ const input=(await db.query<{review_input:unknown}>('select review_input from public.review_revisions where version=1')).rows[0].review_input;assert.deepEqual(input,reviewInput);
  await assert.rejects(submit(source.id,initial,'A stale editor must not overwrite saved work',1,approved.dealId));
  // Any feedback failure must roll back the entire analysis/assessment/revision save.
  await assert.rejects(submit(source.id,initial,'This model reference does not exist',2,approved.dealId,'a'.repeat(64)));
@@ -61,6 +65,22 @@ test('drafts, approved assessments and corrections survive reload without overwr
  assert.equal((await db.query<{status:string}>("select status from public.notification_deliveries")).rows[0].status,'dead');
  await db.exec('reset role');assert.equal((await db.query('select * from public.notification_outbox')).rows.length,1);
  await db.exec(`set role authenticated;set request.jwt.claim.sub='${reader}'`);await assert.rejects(submit(source.id,initial,'Reader cannot edit assessments',3,approved.dealId));
+ await db.exec('reset role');
+ for(const id of ['blank-a','blank-b','reporting'])await db.query(`insert into public.source_items(id,headline,url,published_at,excerpt,source) values($1,'Unidentified transaction',$2,'2026-01-01','Annual report with no transaction','Cision')`,[id,'https://news.cision.com/issuer/r/'+id]);
+ await db.exec(`set role authenticated;set request.jwt.claim.sub='${uid}'`);
+ const blankA=(await submit('blank-a',{...initial,target:'',source:{...initial.source,url:'https://news.cision.com/issuer/r/blank-a'}},'',0)).rows[0].result;
+ const blankB=(await submit('blank-b',{...initial,target:'',source:{...initial.source,url:'https://news.cision.com/issuer/r/blank-b'}},'',0)).rows[0].result;assert.notEqual(blankA.dealId,blankB.dealId);
+ assert.equal((await db.query<{analysis:{target:string}}>('select analysis from public.source_items where id=$1',['blank-a'])).rows[0].analysis.target,'');
+ await db.query("select public.review_source_feedback('reporting',null,null,true,'reporting','Routine annual report',null)");assert.equal((await db.query<{decision:string}>("select decision from public.latest_review_feedback where source_id='reporting'")).rows[0].decision,'not_useful');
+ await assert.rejects(db.query('select public.submit_review_assessment_v5($1,$2,$3,$4,$5,$6,true,null)',[source.id,JSON.stringify(initial),JSON.stringify(a),'Cannot bypass new audit wrapper',approved.dealId,3]));
  await db.exec('reset role;set role anon');await assert.rejects(db.query('select * from public.review_drafts'));
  }finally{await db.close();}
+});
+
+test('display grouping keeps identical headlines together while preserving material updates',async()=>{
+ const {sourceGroups}=await import('../lib/source-groups');
+ const items=[{id:'a',headline:'Company acquires Nordic technology business',url:'https://news.cision.com/a'},
+ {id:'b',headline:'Company acquires Nordic technology business!',url:'https://news.cision.com/b'},
+ {id:'c',headline:'Company acquires Nordic technology business — financing revised',url:'https://news.cision.com/c'}];
+ assert.deepEqual(sourceGroups(items).map(g=>g.map(i=>i.id)),[['a','b'],['c']]);assert.equal(items.length,3);
 });

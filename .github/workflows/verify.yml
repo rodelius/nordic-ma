@@ -2,16 +2,16 @@ name: Verify pilot and demo
 on:
   pull_request:
   push:
-    branches: [main, production-pilot-stage-1, production-pilot-stage-2, ficc-feedback-engine, fix-review-persistence]
+    branches: [main, production-pilot-stage-1, production-pilot-stage-2, ficc-feedback-engine, fix-review-persistence, guided-review]
 permissions:
   contents: read
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
@@ -26,5 +26,14 @@ jobs:
         run: |
           set -euo pipefail
           export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
-          node .devcontainer/start.mjs
-          npm run test:e2e
+          npm run test:e2e 2>&1 | tee browser-tests.log
+      - name: Retain browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: browser-failure-evidence
+          path: |
+            test-results/
+            playwright-report/
+            browser-tests.log
+          retention-days: 7

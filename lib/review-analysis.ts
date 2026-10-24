@@ -5,6 +5,7 @@ export function canonicalAnalysis(input:unknown,source:Pick<ReviewSource,'headli
  const object=input&&typeof input==='object'&&!Array.isArray(input)?input:{};
  const deal=parseDeal({...object,source:{headline:source.headline,url:source.url,timestamp:source.published_at}});
  if(!deal.evidence.some(e=>e.label.trim().toLowerCase()==='nordic connection'&&e.kind==='Fact'&&e.value.trim().length>=8&&!/^(unknown|unconfirmed|not verified|unclear)$/i.test(e.value.trim())))throw Error('Document a source-supported Nordic connection as a Fact evidence entry labelled Nordic connection');
+ if(deal.evidence.some(e=>e.label.trim().toLowerCase()==='transaction relevance'&&e.value.trim().toLowerCase()==='not m&a'))throw Error('Dismiss this announcement as Not an M&A situation rather than approving a transaction');
  deal.status=deal.stage==='Closed'?'Closed':deal.stage==='Failed'?'Failed':'Updated';return deal;
 }
 export function previewAssessment(text:string){
