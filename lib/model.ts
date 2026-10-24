@@ -39,7 +39,8 @@ export function parseDeal(input:unknown):Deal {
  if(!input||typeof input!=='object')throw Error('A structured deal object is required');
  const o=input as Record<string,unknown>;
  const required=['target','country','sector','seller','buyer','stage','value','rationale','pair','classification','notional','angle','rates','delta','action','owner','catalyst','timing','regulatory','risk'];
- for(const k of required)if(typeof o[k]!=='string'||!(o[k] as string).trim()||(o[k] as string).length>4000)throw Error(`Invalid ${k}`);
+ for(const k of required)if(typeof o[k]!=='string'||(o[k] as string).length>4000)throw Error(`Invalid ${k}`);
+ for(const k of ['stage','delta'])if(!(o[k] as string).trim())throw Error(`Invalid ${k}`);
  if(!['Sweden','Norway','Finland','Denmark'].includes(o.country as string))throw Error('Nordic connection country is required');
  if(!['High','Medium','Low'].includes(o.confidence as string))throw Error('Invalid confidence');
  if(!['Yes','No','Unclear'].includes(o.buyerFx as string)||!['Yes','No','Unclear'].includes(o.sellerFx as string))throw Error('Invalid FX classification');

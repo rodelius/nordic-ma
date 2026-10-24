@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-export const ENGINE_VERSION='ficc-cases-v1';
+export const ENGINE_VERSION='ficc-cases-v2';
 export type FeedbackRow={id:string;source_id:string;decision:'useful'|'not_useful'|'exclude';reason:string;score:number|null;note:string;created_at:string;analysis_snapshot?:Record<string,unknown>|null;changed_fields?:string[];source_snapshot:{headline:string;excerpt:string;url:string;published_at:string;deal_id?:string|null}};
 export type LearningCase={id:string;sourceId:string;group:string;at:string;publishedAt:string;headline:string;features:string[];useful:boolean;score:number|null;reason:string;correctionFields?:string[]};
 export type Prediction={priority:number;suggestedFiccScore:number|null;support:number;status:'cold'|'limited'|'supported';explanation:string;neighbors:{feedbackId:string;headline:string;reason:string;useful:boolean;score:number|null;similarity:number;correctionFields?:string[]}[]};
@@ -26,10 +26,11 @@ const signals:Record<string,RegExp>={
  minority:/minority stake|minority interest|partial stake/i,
  shares_issued:/share capital increase|issuance of.*shares|new shares.*acquisition|share consideration/i,
  holdings:/holdings? in company|form 8\.3|dealing disclosure|major shareholding|voting rights/i,
+ reporting:/annual report|quarterly report|interim report|financial results|year.end report|earnings release|bokslut|delårsrapport/i,
  own_shares:/own shares|share buyback|treasury shares/i,
 };
 export function features(text:string){const bounded=text.slice(0,17000);return Object.entries(signals).filter(([,r])=>r.test(bounded)).map(([name])=>name).sort();}
-const signalLabels:Record<string,string>={acquisition:'acquisition wording',sale_process:'sale process',takeover:'public offer/takeover',merger:'merger',completion:'closing/completion',failure:'deal failure',approval:'regulatory approval',nordic_text:'Nordic location words',sek_nok:'SEK/NOK mention',eur_usd_gbp:'EUR/USD/GBP mention',funding:'funding or proceeds wording',bridge:'acquisition bridge',refinance:'refinancing',floating_debt:'floating-rate debt',hedge:'hedging',sponsor:'sponsor/fund',infrastructure:'infrastructure/energy',property:'real estate',finance:'financial services',minority:'minority stake',shares_issued:'share consideration',holdings:'shareholding disclosure',own_shares:'own-share trades'};
+const signalLabels:Record<string,string>={acquisition:'acquisition wording',sale_process:'sale process',takeover:'public offer/takeover',merger:'merger',completion:'closing/completion',failure:'deal failure',approval:'regulatory approval',nordic_text:'Nordic location words',sek_nok:'SEK/NOK mention',eur_usd_gbp:'EUR/USD/GBP mention',funding:'funding or proceeds wording',bridge:'acquisition bridge',refinance:'refinancing',floating_debt:'floating-rate debt',hedge:'hedging',sponsor:'sponsor/fund',infrastructure:'infrastructure/energy',property:'real estate',finance:'financial services',minority:'minority stake',shares_issued:'share consideration',holdings:'shareholding disclosure',own_shares:'own-share trades',reporting:'financial reporting'};
 const weight=(f:string)=>['bridge','refinance','floating_debt','hedge','shares_issued','holdings','own_shares'].includes(f)?2:1;
 function similarity(a:string[],b:string[]){const A=new Set(a),B=new Set(b),union=new Set([...a,...b]);let inter=0,total=0;for(const f of union){total+=weight(f);if(A.has(f)&&B.has(f))inter+=weight(f);}return total?inter/total:0;}
 export function predict(text:string,cases:LearningCase[]):Prediction{return predictFeatures(features(text),cases);}
