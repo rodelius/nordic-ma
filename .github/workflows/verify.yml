@@ -1,0 +1,30 @@
+name: Verify pilot and demo
+on:
+  pull_request:
+  push:
+    branches: [main, production-pilot-stage-1]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:api
+      - run: npm run test:pilot
+      - run: npx playwright install --with-deps chromium
+      - name: Verify desktop and mobile demo
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
+          node .devcontainer/start.mjs
+          npm run test:e2e

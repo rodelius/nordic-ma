@@ -2,6 +2,10 @@
 
 A responsive Next.js / React / TypeScript prototype implementing the supplied Nordic M&A / FICC brief. This project is separate from the legacy `/workspace/cards` checkout. The original brief is in [docs/product-brief.md](docs/product-brief.md).
 
+## Production pilot (review stage)
+
+The **production-pilot-stage-1** branch adds invite-only Supabase sign-in and read-only persistent storage for an empty hosted pilot. Follow [the staged setup and validation checklist](docs/production-pilot.md). Live ingestion and notifications remain disabled until the next reviewed stage. Local/Codespaces demo mode keeps the existing five views and SQLite data.
+
 ## Open in a browser (GitHub Codespaces)
 
 The project includes automatic Node 24 setup, dependency installation, development-server startup and forwarding of port 3000. Open [this project in GitHub Codespaces](https://codespaces.new/rodelius/nordic-ma?quickstart=1), or follow [the browser-only Codespaces guide](docs/codespaces.md). No development tools need to be installed on your Mac. Once the Codespace is configured, use **Ports → 3000 → Open in Browser**. The one-command restart is `node .devcontainer/start.mjs`.
