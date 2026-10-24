@@ -1,17 +1,17 @@
 import webpush from 'web-push';
 import { supabaseAdmin } from './supabase/admin';
-import { fetchAddtechFeed } from './source-feed';
+import { fetchCisionFeed } from './source-feed';
 import { livePushReady, monitoringEnabled } from './live-config';
 import { validateSubscription } from './push-subscription';
 export async function scanSource(manual=false){
  if(!manual&&!monitoringEnabled())return {enabled:false,reason:'Automatic collection is disabled'};
  const db=supabaseAdmin();
  const {data:run,error}=await db.from('source_runs').insert({}).select('id').single();if(error)throw Error('Could not start source run; check Stage 2 migration');
- try{const items=await fetchAddtechFeed();
+ try{const scan=await fetchCisionFeed();const items=scan.items;
  if(items.length){const saved=await db.from('source_items').upsert(items,{onConflict:'id',ignoreDuplicates:true});if(saved.error)throw Error('Could not persist source candidates');}
- const finished=await db.from('source_runs').update({finished_at:new Date().toISOString(),outcome:'ok',fetched:items.length,detail:items.length?'Candidates retained for review':'No qualifying recent M&A items'}).eq('id',run.id);if(finished.error)throw Error('Could not finalize source run');
+ const finished=await db.from('source_runs').update({finished_at:new Date().toISOString(),outcome:'ok',fetched:items.length,detail:JSON.stringify({scanned:scan.fetched,pages:scan.pages,oldestPublishedAt:scan.oldestPublishedAt,coverageLimited:scan.coverageLimited,note:scan.coverageLimited?'Scan cap reached: incomplete seven-day coverage':'Bounded general Cision scan',nordicConnection:'Unverified until analyst review'})}).eq('id',run.id);if(finished.error)throw Error('Could not finalize source run');
  const checkpoint=await db.from('monitor_state').upsert({key:'last_ingestion',value:new Date().toISOString()});if(checkpoint.error)throw Error('Could not save source checkpoint');
- return {enabled:true,candidates:items.length};
+ return {enabled:true,candidates:items.length,scanned:scan.fetched,pages:scan.pages,oldestPublishedAt:scan.oldestPublishedAt,coverageLimited:scan.coverageLimited};
  }catch(e){await db.from('source_runs').update({finished_at:new Date().toISOString(),outcome:'failed',detail:e instanceof Error?e.message:'Source fetch failed'}).eq('id',run.id);throw e;}
 }
 export async function deliverNotifications(){

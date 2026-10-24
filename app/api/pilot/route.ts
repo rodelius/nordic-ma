@@ -8,14 +8,14 @@ export async function GET(){
  if(!stage2Enabled())return Response.json({enabled:false});
  const {client,user}=await requirePilotMember();
  const [items,runs,delivery,member,subs]=await Promise.all([
- client.from('source_items').select('*').order('published_at',{ascending:false}).limit(100),
+ client.from('source_items').select('*',{count:'exact'}).eq('state','pending').order('published_at',{ascending:false}).limit(100),
  client.from('source_runs').select('*').order('started_at',{ascending:false}).limit(10),
  client.from('notification_deliveries').select('id,status,attempts,last_error,sent_at').order('next_attempt_at',{ascending:false}).limit(30),
  client.from('pilot_members').select('can_review').eq('user_id',user.id).single(),
  client.from('push_subscriptions').select('id,enabled,min_score').eq('user_id',user.id),
  ]);
  if([items,runs,delivery,member,subs].some(r=>r.error))return Response.json({error:'Apply the Stage 2 migration before enabling PILOT_STAGE=2'},{status:503});
- return Response.json({enabled:true,items:items.data,runs:runs.data,deliveries:delivery.data,subscriptions:subs.data,canReview:member.data?.can_review,monitoring:monitoringEnabled(),notifications:livePushReady()});
+ return Response.json({enabled:true,items:items.data,pendingTotal:items.count,runs:runs.data,deliveries:delivery.data,subscriptions:subs.data,canReview:member.data?.can_review,monitoring:monitoringEnabled(),notifications:livePushReady()});
 }
 export async function POST(req:Request){
  if(!stage2Enabled())return Response.json({error:'Stage 2 is not enabled'},{status:403});
@@ -30,6 +30,7 @@ export async function POST(req:Request){
  let deal=null;
  if(input.action==='approve'){
   deal=parseDeal(input.deal);
+  if(!deal.evidence.some(e=>e.label.trim().toLowerCase()==='nordic connection'&&e.kind==='Fact'&&e.value.trim().length>=8&&!/^(unknown|unconfirmed|not verified|unclear)$/i.test(e.value.trim())))throw Error('Document a source-supported Nordic connection as a Fact evidence entry labelled Nordic connection');
   deal.source={headline:item.headline,url:item.url,timestamp:item.published_at};
  }
  if(input.existingId!==undefined&&input.existingId!==null&&typeof input.existingId!=='string')throw Error('Invalid transaction selection');

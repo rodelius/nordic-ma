@@ -1,13 +1,13 @@
-# Stage 2 — Addtech source tracking and reviewed notifications
+# Stage 2 — general Cision announcement tracking and reviewed notifications
 
-Stage 1 has been validated by the project owner at **https://nordic-ma.vercel.app**. This stage adds one source, an analyst review queue, persistent updates and a durable push outbox. It is a limited Addtech pilot, not full Nordic news coverage.
+Stage 1 has been validated by the project owner at **https://nordic-ma.vercel.app**. This stage adds one source, an analyst review queue, persistent updates and a durable push outbox. The source is Cision's general issuer-announcement feed, not a single-company feed. It is a bounded, analyst-reviewed pilot, not full Nordic news or rumour coverage.
 
 **Do not re-run migration 001. Do not remove existing tables or data.** Collection and delivery default to disabled. The existing local synthetic demo and five dashboard views remain available.
 
 ## A. Review and deploy the code
 
 1. Review branch `production-pilot-stage-2` against `main`, create a pull request, and merge when satisfied. Existing Stage 1 mode continues until you explicitly enable Stage 2. Wait for Vercel to finish deploying the new code (with `PILOT_STAGE` still unset or `1`) before applying migration 002; the earlier Stage 1 binary does not recognize the new schema marker.
-2. In Supabase's SQL editor, run **only** [`202610240002_live_pilot.sql`](../supabase/migrations/202610240002_live_pilot.sql) once, after migration 001. It adds source candidates, your subscriptions, the notification outbox, deliveries, source run logs and narrowly granted review/worker functions. It also adds `can_review` to pilot memberships and updates the schema marker. No feed is fetched and no alert is sent by this migration.
+2. In Supabase's SQL editor, apply [`202610240002_live_pilot.sql`](../supabase/migrations/202610240002_live_pilot.sql) once if you have not already applied it, then apply [`202610240003_cision_review.sql`](../supabase/migrations/202610240003_cision_review.sql). If migration 002 is already installed, apply **only 003**. Do not re-run 001 or 002. It adds source candidates, your subscriptions, the notification outbox, deliveries, source run logs and narrowly granted review/worker functions. It also adds `can_review` to pilot memberships and updates the schema marker. Migration 003 adds the source-supported Nordic-connection approval gate and works with the earlier Stage 2 database. Neither migration fetches a feed or sends an alert.
 3. Grant yourself review access using your own email in the SQL editor:
 
    ```sql
@@ -22,7 +22,7 @@ Stage 1 has been validated by the project owner at **https://nordic-ma.vercel.ap
    | --- | --- |
    | `PILOT_STAGE` | `2` |
    | `SUPABASE_SECRET_KEY` | Your project's server-only secret key, or legacy service_role key |
-   | `SOURCE_FEED_URL` | Verified official Addtech RSS URL — leave unset until confirmed in step B |
+   | `SOURCE_FEED_URL` | `https://news.cision.com/ListItems?format=rss` (replace any old Addtech value) |
    | `MONITORING_ENABLED` | `false` |
    | `NOTIFICATIONS_ENABLED` | `false` |
    | `CRON_SECRET` | A random server-only secret of at least 32 characters, generated with your password manager |
@@ -32,13 +32,13 @@ Stage 1 has been validated by the project owner at **https://nordic-ma.vercel.ap
 
 ## B. Validate one live source
 
-1. Open **Alerts & catalysts → Addtech announcement review**. Click **Scan official feed**.
+1. Open **Alerts & catalysts → Cision announcement review**. Click **Scan official feed**.
 2. Confirm the latest source run is **ok**, with its timestamp and candidate count. A failed fetch must show **failed**; it must not advance the last-successful-ingestion checkpoint.
-3. The guessed address `https://news.cision.com/addtech/rss` was checked by the project owner and did not show a usable feed. It is **not** a configured default. Obtain the actual feed URL from Addtech's official press-release/subscription page before enabling collection. The Codex machine cannot investigate the issuer website directly because its network policy blocks these hosts. Until a verified URL is supplied, the scan fails explicitly and the source must be considered **not connected**. The current connector accepts only HTTPS paths under `news.cision.com/addtech/`; if the actual official endpoint uses a different host/path or JSON format, report its public URL so the connector can be adapted and tested before activation. Do not weaken the host checks. Once a scan succeeds, open a candidate's source link and verify that it is an Addtech announcement.
+3. The verified endpoint is **<https://news.cision.com/ListItems?format=rss>**. It was discovered from Cision's own RSS control and returned HTTP 200 and valid RSS from the Codex machine on 24 October 2026. A bounded live scan fetched 500 announcements across five pages and found 51 broad M&A candidates. Those were not approved transactions or confirmed Nordic opportunities, and no data was inserted into your production database by that test. Open one candidate's original Cision story to verify that the record matches its issuer announcement.
 4. Scan again. The same items must not be duplicated. The run count reports qualifying feed entries, including already-seen entries; it is not a count of newly inserted records. Source entries with changed content become new review candidates; they are not automatically declared material.
-5. **Zero candidates is a valid outcome.** This pilot screens at most 200 RSS entries from the last seven days for broad acquisition/disposal/process keywords, and then requires manual review. No qualifying recent announcement means no invented transaction and no market alert. The self-test in C does not depend on fresh news.
+5. **Zero candidates is a valid outcome.** This pilot fetches up to five 100-item pages from the general Cision feed and screens entries dated within the last seven days for broad acquisition/disposal/process keywords. Publication times are taken from individual items, not the feed channel timestamp. Routine own-share transaction headlines are excluded. Remaining candidates still require manual review. No qualifying recent announcement means no invented transaction and no market alert. A scan-cap warning (`coverageLimited: true`) means the seven-day window was not fully fetched. The live verification reached that cap; its oldest fetched item was 19 October 2026 at 14:00 Stockholm time. Page limits, changing pagination and daily scan cadence can miss announcements; this pilot does not claim exhaustive coverage. Pending queues display up to 100 records at a time and show the total when more are waiting. The self-test in C does not depend on fresh news.
 
-No arbitrary article URLs are fetched automatically. Only the bounded RSS feed is fetched, and its headline/excerpt are retained. Open the full source yourself: the excerpt can omit important currencies, financing terms or conditions. This is not a full-source search or automatic entity-resolution service.
+No arbitrary article URLs are fetched automatically. Only the general `news.cision.com/ListItems?format=rss` RSS endpoint is fetched with bounded pagination; story links must be HTTPS Cision release URLs. Redirects, DTDs/entities and oversized responses are rejected. Headlines and excerpts are retained. Search or issuer filters in `SOURCE_FEED_URL` are rejected to prevent accidental return to single-company coverage. Open the full source yourself: the excerpt can omit important currencies, financing terms or conditions. This is not a full-source search or automatic entity-resolution service.
 
 ## C. Validate one iPhone test notification
 
@@ -60,8 +60,8 @@ Do this **before** approving market events. You can inspect the source queue whi
 
 ## D. Validate a reviewed transaction and an update
 
-1. Select a pending candidate and click **Review**. Choose **New transaction**, or explicitly attach it to a tracked deal if this is an update. Name-based matching is not automatic.
-2. Complete the structured analysis. Verify transaction parties, Nordic connection, source date, status, score, potential FX notional, currencies and evidence. Keep unknowns explicit; EV is not an FX notional. **Draft with AI** is optional and requires the existing server `AI_API_KEY`. It sees the headline and RSS excerpt only, not the whole article. It cannot publish anything by itself.
+1. Select a pending candidate and click **Review**. Choose **New transaction**, or explicitly attach it to a tracked deal if this is an update. Name-based matching is not automatic. The general feed includes non-Nordic issuers; a geography hint or a currency mention is not sufficient to approve one.
+2. Complete the structured analysis. The buyer and connection country deliberately start unknown. Set `country` to the verified Nordic connection (Sweden/Norway/Finland/Denmark), and add an evidence entry labelled **Nordic connection**, with kind **Fact** and source-supported details about a buyer, seller, target, sponsor or material asset. Both the application and database reject approval without this entry. Verify transaction parties, source date, status, score, potential FX notional, currencies and evidence. Keep unknowns explicit; EV is not an FX notional. **Draft with AI** is optional and requires the existing server `AI_API_KEY`. It sees the headline and RSS excerpt only, not the whole article. It cannot publish anything by itself.
 3. Tick the evidence-review checkbox and approve. The database binds the decision to your authenticated reviewer identity and the source's original URL/time. A single transaction records the review, event, latest deal state and any eligible outbox/delivery rows together.
 4. Verify the deal appears in the radar, its evidence opens, and the morning brief shows the change. For an existing deal, stale, terminal or unchanged updates remain in history but do not replace the latest deal state or queue alerts. Use stage **Closed** or **Failed** exactly for terminal events.
 5. A recent material approved event with FICC score **3+** queues alerts to members who were opted in at approval time and meet the score threshold. Announcements older than **24 hours** can be reviewed/tracked but will not alert. Subscribing later does not retrospectively deliver old approvals.
@@ -81,4 +81,8 @@ Approval is the notification authorization for a market event. Disabling collect
 
 ## Verified locally vs. still requiring your validation
 
-Local automated tests execute both migrations, test reviewer/reader isolation, review/outbox atomicity, idempotency, terminal-deal handling, retry claims, private subscription visibility, RSS parsing/filtering and unsafe push destination rejection. Demo, build and HTTP gates are also checked. They do not establish official-feed availability, Supabase cloud migration success, the Vercel scheduler, or iPhone delivery. Those are the explicit validation steps above.
+Local automated tests execute both migrations, test reviewer/reader isolation, review/outbox atomicity, idempotency, terminal-deal handling, retry claims, private subscription visibility, RSS parsing/filtering and unsafe push destination rejection. Demo, build and HTTP gates are also checked. Live Cision feed access and bounded parsing were verified separately from unit tests. The tests do not establish your Supabase cloud migration, production source scanning, Vercel scheduler execution or iPhone delivery. Those are the explicit validation steps above.
+
+## Source limits and quality
+
+Cision is an issuer-distribution source. It does not cover every press rumour, privately run process, regulator filing, adviser mandate or licensed news report. Global M&A matches can include holdings disclosures, unrelated acquisitions, historic narrative and other noise. Country and fund currencies are never inferred as facts just from a newsroom name. Reviewers must reject non-Nordic or irrelevant items and distinguish facts, assumptions and unknowns. Exact content duplicates are suppressed; translations and rewritten stories can remain separate candidates and should be matched/dismissed by the reviewer. Broader sources and semantic/entity matching are later increments after this pilot is validated.
