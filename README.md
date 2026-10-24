@@ -2,6 +2,10 @@
 
 A responsive Next.js / React / TypeScript prototype implementing the supplied Nordic M&A / FICC brief. This project is separate from the legacy `/workspace/cards` checkout. The original brief is in [docs/product-brief.md](docs/product-brief.md).
 
+## Feedback-learning engine (review branch)
+
+Branch **ficc-feedback-engine** adds structured reviewer feedback, a case-based priority model, versioned evaluation/promotion, corrections/exclusions, and an evidence-based FICC hypothesis check. Begin in shadow mode after migration 004. Follow [the deployment and validation guide](docs/feedback-engine.md). Existing source screening, verified deal facts and approval/notification rules are preserved.
+
 ## Production pilot
 
 Stage 1 provides invite-only Supabase sign-in and storage; its setup is in [production-pilot.md](docs/production-pilot.md). The **production-pilot-stage-2** branch adds general Cision source candidates, human approval, tracked deal updates and a durable notification outbox. Follow [the staged live-pilot validation guide](docs/live-pilot.md). Collection and delivery default to off until explicitly enabled in Vercel. The local/Codespaces demo remains available unchanged.
