@@ -16,3 +16,9 @@ export async function requirePilotMember(){
  if(membershipError||!member)throw Error('Pilot access required');
  return {client,user};
 }
+export async function requirePilotReviewer(){
+ const result=await requirePilotMember();
+ const {data,error}=await result.client.from('pilot_members').select('can_review').eq('user_id',result.user.id).single();
+ if(error||!data?.can_review)throw Error('Reviewer access required');
+ return result;
+}
