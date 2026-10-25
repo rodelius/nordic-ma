@@ -1,5 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
-async function alerts(page:Page,mobile:boolean){await page.goto('/');await expect(page.getByText(/PILOT \/ STAGE 2/)).toBeVisible();if(mobile)await page.getByLabel('Open navigation').click();await page.getByRole('button',{name:/^Alerts & catalysts/}).click();}
+async function alerts(page:Page,mobile:boolean){await page.goto('/');await expect(page.getByText(/PILOT \/ STAGE 2/)).toBeVisible();if(mobile)await page.getByLabel('Open navigation').click();await page.getByRole('button',{name:/^News & reviews/}).click();}
 const evaluation={eligible:false,reason:'Need at least 12 distinct labelled groups.',trainingCount:0,holdoutCount:0,scoredHoldouts:0,precisionAt3:null,baselinePrecisionAt3:null};
 test('dismissal reasons and feedback corrections are explicit; shadow promotion stays blocked',async({page,request},info)=>{
  const baseline=await request.get('/api/corporate-events').then(r=>r.json());let dismissed=false,excluded=false,saved=false;const bodies:Record<string,unknown>[]=[];

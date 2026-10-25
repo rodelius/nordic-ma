@@ -50,3 +50,23 @@ Where the vocabulary defines UNKNOWN, NOT_APPLICABLE or NOT_REQUIRED, the UI lab
 Database tests apply migrations 001–008 and prove approval with just the core classifications and source identity, without nexus, exposure party or hedge product requirements. They cover FX pairs versus rates currencies, version conflicts and optional records. Browser tests cover compact fields, task groups, draft restoration, old decisions beyond the first 100, mobile footer hit-testing, legacy Nordic context, metadata defaults, matching/unmatching and explicit hedge creation.
 
 Earlier guides describe the prior release's stricter evidence and nexus gates. This guide defines the manual-review policy after migration 008; existing enum IDs and ontology version 1.0.0 remain unchanged.
+
+## Timestamp and mobile follow-up (migration 009)
+
+Installations already through 008 apply only `202610250009_timestamp_precision.sql`, then deploy the timestamp/mobile branch. This additive migration accepts PostgreSQL timestamps with up to six fractional digits, including `2026-10-25T07:09:35.061449+00:00`. Neither the app nor the database truncates source retrieval precision. Earlier migrations must not be rerun. Existing drafts and saved reviews need no conversion. Reopen the affected review and approve it after deployment.
+
+Navigation now uses Event radar, Corporate events, Exposures & hedges, News & reviews and Morning brief. Review section is the visible label for RecordGroup. Source fields use plain labels, while original values are expandable beside each input. Mobile event tables become labelled cards. Larger text, 44px minimum primary controls, visible focus rings and labelled/bordered status surfaces improve readability without relying on red/green distinctions.
+
+Validate an affected six-digit retrieval timestamp, a saved-assessment correction, menu navigation on a narrow screen and approval after scrolling. Do not manually change the retrieval time to work around the old error.
+
+## Recommended next delivery: evidence-backed automatic extraction
+
+The next priority is extracting substantially more from Cision articles into this graph. Start with a fixed, manually reviewed evaluation set covering acquisitions, disposals, bids, financing, completion updates and irrelevant reporting. Keep issuer names, timestamps and source text snapshots alongside each case.
+
+1. Retrieve and retain permitted full article text, rather than relying on truncated feed excerpts; record retrieval failures and source revisions explicitly.
+2. Extract parties/roles, event type and independent process states, dates, conditions, financing, consideration and explicit currencies into enum-constrained draft records. Every factual suggestion should link to an exact supporting source passage. Missing facts remain unknown.
+3. Resolve repeat announcements to the same corporate event; distinguish new events, material updates and repeated reporting before proposing changes.
+4. Present suggested changes beside the current approved values for review. Treat FICC exposure and product recommendations as separate hypotheses; never infer a funding currency or create hedges solely from domicile.
+5. Measure field precision, coverage, enum errors and reviewer correction/time by event type on held-out cases. Use corrections to improve prompts and comparable-case suggestions; field audit retention alone is not automatic model training. Enable background extraction only after these checks, keeping approval and delivery gates.
+
+This release fixes validation and the review interface; it does not activate unattended extraction or notifications.
