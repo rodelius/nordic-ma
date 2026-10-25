@@ -1398,13 +1398,11 @@
         },
         "from_event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "to_event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "relationship_type": {
           "type": "enum",
@@ -1462,13 +1460,11 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "entity_id": {
           "type": "ref",
-          "ref": "Entity",
-          "required": true
+          "ref": "Entity"
         },
         "role": {
           "type": "enum",
@@ -1508,8 +1504,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "included_entity_ids": {
           "type": "array",
@@ -1544,13 +1539,11 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "bidder_entity_id": {
           "type": "ref",
-          "ref": "Entity",
-          "required": true
+          "ref": "Entity"
         },
         "round": {
           "type": "integer"
@@ -1580,8 +1573,7 @@
         },
         "pursuit_id": {
           "type": "ref",
-          "ref": "Pursuit",
-          "required": true
+          "ref": "Pursuit"
         },
         "submitted_at": {
           "type": "datetime"
@@ -1629,8 +1621,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "pursuit_id": {
           "type": "ref",
@@ -1700,8 +1691,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "pursuit_id": {
           "type": "ref",
@@ -1709,8 +1699,7 @@
         },
         "milestone_definition_id": {
           "type": "ref",
-          "ref": "MilestoneDefinition",
-          "required": true
+          "ref": "MilestoneDefinition"
         },
         "status": {
           "type": "enum",
@@ -1746,16 +1735,13 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "predecessor_id": {
-          "type": "any_ref",
-          "required": true
+          "type": "any_ref"
         },
         "successor_id": {
-          "type": "any_ref",
-          "required": true
+          "type": "any_ref"
         },
         "dependency_type": {
           "type": "enum",
@@ -1792,8 +1778,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "condition_type": {
           "type": "enum",
@@ -1836,8 +1821,7 @@
         },
         "condition_id": {
           "type": "ref",
-          "ref": "Condition",
-          "required": true
+          "ref": "Condition"
         },
         "filing_at": {
           "type": "datetime"
@@ -1879,13 +1863,11 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "borrower_id": {
           "type": "ref",
-          "ref": "Entity",
-          "required": true
+          "ref": "Entity"
         },
         "instrument_type": {
           "type": "enum",
@@ -1951,8 +1933,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "funding_id": {
           "type": "ref",
@@ -2030,8 +2011,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "leg_ids": {
           "type": "array",
@@ -2040,8 +2020,7 @@
         },
         "exposed_entity_id": {
           "type": "ref",
-          "ref": "Entity",
-          "required": true
+          "ref": "Entity"
         },
         "risk_type": {
           "type": "enum",
@@ -2213,12 +2192,10 @@
         },
         "source_id": {
           "type": "ref",
-          "ref": "SourceDocument",
-          "required": true
+          "ref": "SourceDocument"
         },
         "subject_id": {
-          "type": "any_ref",
-          "required": true
+          "type": "any_ref"
         },
         "predicate": {
           "type": "enum",
@@ -2268,8 +2245,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "dimension": {
           "type": "enum",
@@ -2318,8 +2294,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "as_of": {
           "type": "datetime"
@@ -2373,8 +2348,7 @@
           "enum": "feedback_targets"
         },
         "target_id": {
-          "type": "any_ref",
-          "required": true
+          "type": "any_ref"
         },
         "proposed_value": {
           "type": "json"
@@ -2411,8 +2385,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "client_entity_id": {
           "type": "ref",
@@ -2475,21 +2448,18 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "country": {
           "type": "country"
         },
         "nexus_entity_id": {
           "type": "ref",
-          "ref": "Entity",
-          "required": true
+          "ref": "Entity"
         },
         "nexus_claim_id": {
           "type": "ref",
-          "ref": "Claim",
-          "required": true
+          "ref": "Claim"
         },
         "nexus_role": {
           "type": "enum",
@@ -2506,8 +2476,7 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "event_type_id": {
           "type": "enum",
@@ -2524,13 +2493,11 @@
         },
         "perimeter_id": {
           "type": "ref",
-          "ref": "TransactionPerimeter",
-          "required": true
+          "ref": "TransactionPerimeter"
         },
         "entity_id": {
           "type": "ref",
-          "ref": "Entity",
-          "required": true
+          "ref": "Entity"
         },
         "included": {
           "type": "boolean"
@@ -2550,8 +2517,7 @@
         },
         "leg_id": {
           "type": "ref",
-          "ref": "EconomicLeg",
-          "required": true
+          "ref": "EconomicLeg"
         },
         "allocated_notional": {
           "type": "decimal"
@@ -2570,8 +2536,7 @@
         },
         "hedge_id": {
           "type": "ref",
-          "ref": "Hedge",
-          "required": true
+          "ref": "Hedge"
         },
         "exposure_id": {
           "type": "ref",
@@ -2601,8 +2566,7 @@
         },
         "claim_id": {
           "type": "ref",
-          "ref": "Claim",
-          "required": true
+          "ref": "Claim"
         }
       }
     },
@@ -2615,13 +2579,11 @@
         },
         "event_id": {
           "type": "ref",
-          "ref": "CorporateEvent",
-          "required": true
+          "ref": "CorporateEvent"
         },
         "source_id": {
           "type": "ref",
-          "ref": "SourceDocument",
-          "required": true
+          "ref": "SourceDocument"
         }
       }
     }
