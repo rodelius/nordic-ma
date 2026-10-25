@@ -1,0 +1,2630 @@
+{
+  "version": "1.0.0",
+  "enums": {
+    "lifecycle_phases": [
+      "ORIGINATION",
+      "STRATEGIC_REVIEW",
+      "PREPARATION",
+      "MARKETING_OR_ENGAGEMENT",
+      "EVALUATION",
+      "NEGOTIATION_AND_SELECTION",
+      "COMMITMENT",
+      "CONDITIONS_AND_EXECUTION",
+      "COMPLETION",
+      "POST_COMPLETION"
+    ],
+    "dispositions": [
+      "ACTIVE",
+      "ON_HOLD",
+      "WITHDRAWN",
+      "TERMINATED",
+      "LAPSED",
+      "SUPERSEDED",
+      "COMPLETED"
+    ],
+    "outcomes": [
+      "UNKNOWN",
+      "SUCCESS",
+      "PARTIAL_SUCCESS",
+      "FAILURE",
+      "NO_ACTION"
+    ],
+    "milestone_statuses": [
+      "UNKNOWN",
+      "PLANNED",
+      "IN_PROGRESS",
+      "ACHIEVED",
+      "FAILED",
+      "WAIVED",
+      "NOT_APPLICABLE",
+      "DISPUTED",
+      "REVOKED"
+    ],
+    "assertion_types": [
+      "OFFICIAL_FACT",
+      "REPORTED_FACT",
+      "RUMOUR",
+      "ANALYST_INFERENCE",
+      "MODEL_ESTIMATE"
+    ],
+    "event_relationship_types": [
+      "PART_OF",
+      "FINANCES",
+      "REFINANCES",
+      "REQUIRES",
+      "ALTERNATIVE_TO",
+      "IMPLEMENTS",
+      "SEPARATES",
+      "RESULTS_IN",
+      "SUPERSEDES"
+    ],
+    "event_types": [
+      "ACQ_PRIVATE",
+      "SALE_AUCTION",
+      "TAKE_PRIVATE",
+      "PUBLIC_OFFER",
+      "SCHEME",
+      "LBO",
+      "MERGER",
+      "MINORITY",
+      "JV",
+      "DIVESTITURE",
+      "ASSET_SALE",
+      "CARVE_OUT",
+      "SPIN_OFF",
+      "SPLIT_OFF",
+      "EQUITY_CARVE_IPO",
+      "IPO",
+      "DIRECT_LIST",
+      "DUAL_TRACK",
+      "FOLLOW_ON",
+      "RIGHTS",
+      "BUYBACK",
+      "SPECIAL_DIV",
+      "REFI_LOAN",
+      "BOND",
+      "PRIVATE_DEBT",
+      "A_AND_E",
+      "DEBT_TENDER",
+      "DIVIDEND_RECAP",
+      "BRIDGE_TAKEOUT",
+      "SECURITISATION",
+      "PROJECT_FINANCE",
+      "SALE_LEASEBACK",
+      "RESTRUCT_OOC",
+      "RESTRUCT_COURT",
+      "DISTRESSED_SALE",
+      "DEBT_EQUITY_SWAP",
+      "OP_RESTRUCT",
+      "LIQUIDATION",
+      "CONTINUATION",
+      "STRATEGIC_REVIEW"
+    ],
+    "workstream_types": [
+      "COMMERCIAL",
+      "DILIGENCE",
+      "DOCUMENTATION",
+      "FINANCING",
+      "REGULATORY",
+      "SHAREHOLDER",
+      "SEPARATION",
+      "HEDGING",
+      "CLOSING"
+    ],
+    "economic_purposes": [
+      "OWNERSHIP_CHANGE",
+      "CAPITAL_RAISING",
+      "LIABILITY_MANAGEMENT",
+      "SEPARATION",
+      "CAPITAL_RETURN",
+      "DISTRESS_RESOLUTION",
+      "STRATEGIC_REVIEW"
+    ],
+    "routes": [
+      "BILATERAL",
+      "RESTRICTED_AUCTION",
+      "BROAD_AUCTION",
+      "PUBLIC_OFFER",
+      "SCHEME",
+      "STATUTORY_MERGER",
+      "LISTING",
+      "EXCHANGE",
+      "COURT_PROCESS"
+    ],
+    "control_outcomes": [
+      "NONE",
+      "MINORITY",
+      "JOINT_CONTROL",
+      "MAJORITY",
+      "FULL_OWNERSHIP",
+      "UNKNOWN"
+    ],
+    "ownership_transitions": [
+      "PRIVATE_TO_PRIVATE",
+      "PUBLIC_TO_PRIVATE",
+      "PRIVATE_TO_PUBLIC",
+      "PUBLIC_TO_PUBLIC",
+      "INTRA_GROUP"
+    ],
+    "party_classes": [
+      "CORPORATE",
+      "SPONSOR",
+      "INFRASTRUCTURE_FUND",
+      "FAMILY",
+      "SOVEREIGN",
+      "MANAGEMENT",
+      "CREDITOR",
+      "DISPERSED_INVESTORS"
+    ],
+    "consideration_types": [
+      "CASH",
+      "SHARES",
+      "MIXED",
+      "ASSET_CONTRIBUTION",
+      "DEBT_ASSUMPTION",
+      "ROLLOVER",
+      "EARN_OUT",
+      "DEFERRED_CONSIDERATION"
+    ],
+    "financing_structures": [
+      "CORPORATE_BALANCE_SHEET",
+      "LEVERAGED",
+      "BRIDGE",
+      "PROJECT_FINANCE",
+      "EQUITY",
+      "MIXED",
+      "UNKNOWN"
+    ],
+    "initiation": [
+      "SOLICITED",
+      "UNSOLICITED"
+    ],
+    "support": [
+      "RECOMMENDED",
+      "OPPOSED",
+      "NEUTRAL",
+      "UNKNOWN"
+    ],
+    "offer_obligation": [
+      "VOLUNTARY",
+      "MANDATORY"
+    ],
+    "access_scopes": [
+      "CONFIDENTIAL",
+      "PUBLIC",
+      "RESTRICTED_WALL_CROSSED",
+      "ACCESS_CONTROLLED"
+    ],
+    "perimeter_scopes": [
+      "WHOLE_COMPANY",
+      "SUBSIDIARY",
+      "BUSINESS_UNIT",
+      "ASSETS",
+      "PORTFOLIO",
+      "LIABILITIES",
+      "SECURITIES"
+    ],
+    "date_precisions": [
+      "EXACT",
+      "DAY",
+      "MONTH",
+      "QUARTER",
+      "RANGE",
+      "UNKNOWN"
+    ],
+    "party_roles": [
+      "BUYER",
+      "SELLER",
+      "TARGET",
+      "BORROWER",
+      "LENDER",
+      "ISSUER",
+      "INVESTOR",
+      "SHAREHOLDER",
+      "SPONSOR",
+      "ADVISER",
+      "GUARANTOR",
+      "PROJECT_COMPANY",
+      "OTHER"
+    ],
+    "condition_states": [
+      "UNKNOWN",
+      "OPEN",
+      "IN_PROGRESS",
+      "SATISFIED",
+      "WAIVED",
+      "FAILED",
+      "REVOKED",
+      "NOT_APPLICABLE"
+    ],
+    "binding_statuses": [
+      "UNKNOWN",
+      "NON_BINDING",
+      "PARTIALLY_BINDING",
+      "BINDING"
+    ],
+    "flow_types": [
+      "PURCHASE_PRICE",
+      "DEBT_DRAW",
+      "DEBT_REPAYMENT",
+      "FEES",
+      "TAX",
+      "DIVIDEND",
+      "CAPEX",
+      "EARN_OUT",
+      "DEFERRED_CONSIDERATION",
+      "EQUITY_SUBSCRIPTION",
+      "DISTRIBUTION",
+      "ASSET_CONTRIBUTION",
+      "OTHER"
+    ],
+    "risk_types": [
+      "FX",
+      "INTEREST_RATE",
+      "CURRENCY_BASIS",
+      "CREDIT_SPREAD",
+      "INFLATION",
+      "COMMODITY",
+      "OTHER"
+    ],
+    "directions": [
+      "PAY",
+      "RECEIVE",
+      "LONG",
+      "SHORT",
+      "UNKNOWN"
+    ],
+    "estimation_statuses": [
+      "UNKNOWN",
+      "OBSERVED",
+      "VALIDATED",
+      "ESTIMATED",
+      "MODELLED"
+    ],
+    "review_states": [
+      "UNREVIEWED",
+      "ACCEPTED",
+      "DISPUTED",
+      "REJECTED",
+      "SUPERSEDED",
+      "LEGACY_IMPORTED"
+    ],
+    "approval_states": [
+      "DRAFT",
+      "IN_REVIEW",
+      "APPROVED",
+      "REJECTED"
+    ],
+    "gross_net_bases": [
+      "GROSS",
+      "NET",
+      "UNKNOWN"
+    ],
+    "measurement_bases": [
+      "CASH_AMOUNT",
+      "EQUITY_VALUE",
+      "ENTERPRISE_VALUE",
+      "DEBT_PRINCIPAL",
+      "NOTIONAL",
+      "OTHER"
+    ],
+    "logic_groups": [
+      "AND",
+      "OR"
+    ],
+    "dependency_types": [
+      "REQUIRES",
+      "BEFORE",
+      "AFTER",
+      "CONDITIONAL"
+    ],
+    "opportunity_statuses": [
+      "IDENTIFIED",
+      "VALIDATING",
+      "READY",
+      "CONTACTED",
+      "CLOSED",
+      "DISMISSED"
+    ],
+    "product_families": [
+      "FX",
+      "RATES",
+      "CROSS_CURRENCY",
+      "INFLATION",
+      "COMMODITY",
+      "OTHER"
+    ],
+    "exposure_statuses": [
+      "UNKNOWN",
+      "POTENTIAL",
+      "VALIDATED",
+      "NO_IDENTIFIED_NEED"
+    ],
+    "advisory_actions": [
+      "MONITOR",
+      "VERIFY_EXPOSURE",
+      "CONTACT_TREASURY",
+      "PREPARE_INDICATIVE",
+      "REVIEW_HEDGE",
+      "REVIEW_FINANCING",
+      "NO_ACTION"
+    ],
+    "urgencies": [
+      "UNKNOWN",
+      "LOW",
+      "MEDIUM",
+      "HIGH",
+      "IMMEDIATE"
+    ],
+    "rationale_codes": [
+      "FUNDING_CURRENCY_MISMATCH",
+      "PROCEEDS_REPATRIATION",
+      "FLOATING_RATE_DEBT",
+      "REFINANCING",
+      "CROSS_CURRENCY_DEBT",
+      "INFLATION_LINKAGE",
+      "COMMODITY_EXPOSURE",
+      "MIXED_OR_DEFERRED_CONSIDERATION",
+      "TIMING_UNCERTAINTY",
+      "NATURAL_OFFSETS_UNVERIFIED",
+      "NO_CASH_CONSIDERATION",
+      "NO_CONFIRMED_EXPOSURE",
+      "INSUFFICIENT_EVIDENCE"
+    ],
+    "funding_certainties": [
+      "UNKNOWN",
+      "PROPOSED",
+      "INDICATIVE",
+      "COMMITTED",
+      "AVAILABLE",
+      "PARTIALLY_DRAWN",
+      "DRAWN",
+      "REFINANCED",
+      "REPAID",
+      "EXPIRED",
+      "CANCELLED"
+    ],
+    "rate_profiles": [
+      "UNKNOWN",
+      "FIXED",
+      "FLOATING",
+      "MIXED"
+    ],
+    "funding_instruments": [
+      "LOAN",
+      "BOND",
+      "BRIDGE",
+      "REVOLVER",
+      "PRIVATE_DEBT",
+      "PROJECT_FINANCE",
+      "EQUITY",
+      "SECURITISATION",
+      "OTHER"
+    ],
+    "hedge_products": [
+      "FX_FORWARD",
+      "FX_OPTION",
+      "CONTINGENT_FX",
+      "IRS",
+      "RATE_CAP",
+      "RATE_COLLAR",
+      "CROSS_CURRENCY_SWAP",
+      "INFLATION_SWAP",
+      "COMMODITY_HEDGE",
+      "OTHER"
+    ],
+    "approval_decisions": [
+      "UNKNOWN",
+      "PENDING",
+      "CONDITIONAL_CLEARANCE",
+      "CLEARED",
+      "PROHIBITED",
+      "WITHDRAWN",
+      "REVOKED"
+    ],
+    "source_types": [
+      "UNKNOWN",
+      "ISSUER_ANNOUNCEMENT",
+      "REGULATORY_FILING",
+      "NEWS",
+      "INTERNAL",
+      "OTHER"
+    ],
+    "condition_types": [
+      "REGULATORY",
+      "FDI",
+      "SHAREHOLDER",
+      "FINANCING",
+      "COURT",
+      "THIRD_PARTY_CONSENT",
+      "CONTRACTUAL",
+      "OTHER"
+    ],
+    "credit_statuses": [
+      "UNKNOWN",
+      "NOT_ASSESSED",
+      "IN_REVIEW",
+      "APPROVED",
+      "REJECTED",
+      "EXPIRED"
+    ],
+    "documentation_statuses": [
+      "UNKNOWN",
+      "DRAFTING",
+      "NEGOTIATING",
+      "EXECUTED",
+      "EFFECTIVE"
+    ],
+    "programme_statuses": [
+      "UNKNOWN",
+      "ACTIVE",
+      "ON_HOLD",
+      "COMPLETED",
+      "TERMINATED",
+      "SUPERSEDED"
+    ],
+    "pursuit_statuses": [
+      "UNKNOWN",
+      "IDENTIFIED",
+      "APPROACHED",
+      "EVALUATING",
+      "BIDDING",
+      "SELECTED",
+      "EXCLUSIVE",
+      "WITHDRAWN",
+      "REJECTED",
+      "COMPLETED"
+    ],
+    "forecast_targets": [
+      "COMPLETION_PROBABILITY",
+      "COMPLETION_DATE",
+      "SETTLEMENT_AMOUNT",
+      "OTHER"
+    ],
+    "forecast_units": [
+      "PROBABILITY",
+      "DECIMAL",
+      "DATE"
+    ],
+    "forecast_horizons": [
+      "ONE_MONTH",
+      "THREE_MONTHS",
+      "SIX_MONTHS",
+      "ONE_YEAR",
+      "EVENT_COMPLETION",
+      "OTHER"
+    ],
+    "evidence_statuses": [
+      "UNKNOWN",
+      "SUPPORTED",
+      "INFERRED",
+      "DISPUTED",
+      "INSUFFICIENT"
+    ],
+    "approval_stages": [
+      "UNKNOWN",
+      "PRE_NOTIFICATION",
+      "FILED",
+      "IN_REVIEW",
+      "IN_DEPTH_REVIEW",
+      "REMEDIES",
+      "DECIDED",
+      "APPEAL"
+    ],
+    "appeal_states": [
+      "UNKNOWN",
+      "NONE",
+      "PENDING",
+      "RESOLVED"
+    ],
+    "feedback_targets": [
+      "EventProgramme",
+      "CorporateEvent",
+      "EventRelationship",
+      "Entity",
+      "EventParty",
+      "TransactionPerimeter",
+      "Pursuit",
+      "Bid",
+      "WorkstreamInstance",
+      "MilestoneDefinition",
+      "MilestoneOccurrence",
+      "Dependency",
+      "Condition",
+      "ApprovalCase",
+      "FundingInstrument",
+      "EconomicLeg",
+      "RiskExposure",
+      "Hedge",
+      "SourceDocument",
+      "Claim",
+      "StateTransition",
+      "Forecast",
+      "Feedback",
+      "Opportunity",
+      "EventJurisdiction",
+      "EventTypeTag",
+      "EventEntityPerimeter",
+      "ExposureLegAllocation",
+      "HedgeExposureAllocation",
+      "ClaimSupport",
+      "EventSource"
+    ],
+    "feedback_adjudications": [
+      "PENDING",
+      "ACCEPTED",
+      "REJECTED",
+      "DISPUTED"
+    ],
+    "annotator_roles": [
+      "ANALYST",
+      "REVIEWER",
+      "ADMIN"
+    ],
+    "accounting_designations": [
+      "UNKNOWN",
+      "NONE",
+      "CASH_FLOW_HEDGE",
+      "FAIR_VALUE_HEDGE",
+      "NET_INVESTMENT_HEDGE"
+    ],
+    "control_rights": [
+      "UNKNOWN",
+      "NONE",
+      "PROTECTIVE",
+      "JOINT_CONTROL",
+      "CONTROL"
+    ],
+    "rate_indices": [
+      "UNKNOWN",
+      "STIBOR",
+      "NIBOR",
+      "CIBOR",
+      "EURIBOR",
+      "ESTR",
+      "SOFR",
+      "SONIA",
+      "OTHER"
+    ],
+    "iso_countries": [
+      "AD",
+      "AE",
+      "AF",
+      "AG",
+      "AI",
+      "AL",
+      "AM",
+      "AO",
+      "AQ",
+      "AR",
+      "AS",
+      "AT",
+      "AU",
+      "AW",
+      "AX",
+      "AZ",
+      "BA",
+      "BB",
+      "BD",
+      "BE",
+      "BF",
+      "BG",
+      "BH",
+      "BI",
+      "BJ",
+      "BL",
+      "BM",
+      "BN",
+      "BO",
+      "BQ",
+      "BR",
+      "BS",
+      "BT",
+      "BV",
+      "BW",
+      "BY",
+      "BZ",
+      "CA",
+      "CC",
+      "CD",
+      "CF",
+      "CG",
+      "CH",
+      "CI",
+      "CK",
+      "CL",
+      "CM",
+      "CN",
+      "CO",
+      "CR",
+      "CU",
+      "CV",
+      "CW",
+      "CX",
+      "CY",
+      "CZ",
+      "DE",
+      "DJ",
+      "DK",
+      "DM",
+      "DO",
+      "DZ",
+      "EC",
+      "EE",
+      "EG",
+      "EH",
+      "ER",
+      "ES",
+      "ET",
+      "FI",
+      "FJ",
+      "FK",
+      "FM",
+      "FO",
+      "FR",
+      "GA",
+      "GB",
+      "GD",
+      "GE",
+      "GF",
+      "GG",
+      "GH",
+      "GI",
+      "GL",
+      "GM",
+      "GN",
+      "GP",
+      "GQ",
+      "GR",
+      "GS",
+      "GT",
+      "GU",
+      "GW",
+      "GY",
+      "HK",
+      "HM",
+      "HN",
+      "HR",
+      "HT",
+      "HU",
+      "ID",
+      "IE",
+      "IL",
+      "IM",
+      "IN",
+      "IO",
+      "IQ",
+      "IR",
+      "IS",
+      "IT",
+      "JE",
+      "JM",
+      "JO",
+      "JP",
+      "KE",
+      "KG",
+      "KH",
+      "KI",
+      "KM",
+      "KN",
+      "KP",
+      "KR",
+      "KW",
+      "KY",
+      "KZ",
+      "LA",
+      "LB",
+      "LC",
+      "LI",
+      "LK",
+      "LR",
+      "LS",
+      "LT",
+      "LU",
+      "LV",
+      "LY",
+      "MA",
+      "MC",
+      "MD",
+      "ME",
+      "MF",
+      "MG",
+      "MH",
+      "MK",
+      "ML",
+      "MM",
+      "MN",
+      "MO",
+      "MP",
+      "MQ",
+      "MR",
+      "MS",
+      "MT",
+      "MU",
+      "MV",
+      "MW",
+      "MX",
+      "MY",
+      "MZ",
+      "NA",
+      "NC",
+      "NE",
+      "NF",
+      "NG",
+      "NI",
+      "NL",
+      "NO",
+      "NP",
+      "NR",
+      "NU",
+      "NZ",
+      "OM",
+      "PA",
+      "PE",
+      "PF",
+      "PG",
+      "PH",
+      "PK",
+      "PL",
+      "PM",
+      "PN",
+      "PR",
+      "PS",
+      "PT",
+      "PW",
+      "PY",
+      "QA",
+      "RE",
+      "RO",
+      "RS",
+      "RU",
+      "RW",
+      "SA",
+      "SB",
+      "SC",
+      "SD",
+      "SE",
+      "SG",
+      "SH",
+      "SI",
+      "SJ",
+      "SK",
+      "SL",
+      "SM",
+      "SN",
+      "SO",
+      "SR",
+      "SS",
+      "ST",
+      "SV",
+      "SX",
+      "SY",
+      "SZ",
+      "TC",
+      "TD",
+      "TF",
+      "TG",
+      "TH",
+      "TJ",
+      "TK",
+      "TL",
+      "TM",
+      "TN",
+      "TO",
+      "TR",
+      "TT",
+      "TV",
+      "TW",
+      "TZ",
+      "UA",
+      "UG",
+      "UM",
+      "US",
+      "UY",
+      "UZ",
+      "VA",
+      "VC",
+      "VE",
+      "VG",
+      "VI",
+      "VN",
+      "VU",
+      "WF",
+      "WS",
+      "YE",
+      "YT",
+      "ZA",
+      "ZM",
+      "ZW"
+    ],
+    "iso_currencies": [
+      "AED",
+      "AFN",
+      "ALL",
+      "AMD",
+      "ANG",
+      "AOA",
+      "ARS",
+      "AUD",
+      "AWG",
+      "AZN",
+      "BAM",
+      "BBD",
+      "BDT",
+      "BGN",
+      "BHD",
+      "BIF",
+      "BMD",
+      "BND",
+      "BOB",
+      "BOV",
+      "BRL",
+      "BSD",
+      "BTN",
+      "BWP",
+      "BYN",
+      "BZD",
+      "CAD",
+      "CDF",
+      "CHE",
+      "CHF",
+      "CHW",
+      "CLF",
+      "CLP",
+      "CNY",
+      "COP",
+      "COU",
+      "CRC",
+      "CUC",
+      "CUP",
+      "CVE",
+      "CZK",
+      "DJF",
+      "DKK",
+      "DOP",
+      "DZD",
+      "EGP",
+      "ERN",
+      "ETB",
+      "EUR",
+      "FJD",
+      "FKP",
+      "GBP",
+      "GEL",
+      "GHS",
+      "GIP",
+      "GMD",
+      "GNF",
+      "GTQ",
+      "GYD",
+      "HKD",
+      "HNL",
+      "HRK",
+      "HTG",
+      "HUF",
+      "IDR",
+      "ILS",
+      "INR",
+      "IQD",
+      "IRR",
+      "ISK",
+      "JMD",
+      "JOD",
+      "JPY",
+      "KES",
+      "KGS",
+      "KHR",
+      "KMF",
+      "KPW",
+      "KRW",
+      "KWD",
+      "KYD",
+      "KZT",
+      "LAK",
+      "LBP",
+      "LKR",
+      "LRD",
+      "LSL",
+      "LYD",
+      "MAD",
+      "MDL",
+      "MGA",
+      "MKD",
+      "MMK",
+      "MNT",
+      "MOP",
+      "MRU",
+      "MUR",
+      "MVR",
+      "MWK",
+      "MXN",
+      "MXV",
+      "MYR",
+      "MZN",
+      "NAD",
+      "NGN",
+      "NIO",
+      "NOK",
+      "NPR",
+      "NZD",
+      "OMR",
+      "PAB",
+      "PEN",
+      "PGK",
+      "PHP",
+      "PKR",
+      "PLN",
+      "PYG",
+      "QAR",
+      "RON",
+      "RSD",
+      "RUB",
+      "RWF",
+      "SAR",
+      "SBD",
+      "SCR",
+      "SDG",
+      "SEK",
+      "SGD",
+      "SHP",
+      "SLE",
+      "SLL",
+      "SOS",
+      "SRD",
+      "SSP",
+      "STN",
+      "SVC",
+      "SYP",
+      "SZL",
+      "THB",
+      "TJS",
+      "TMT",
+      "TND",
+      "TOP",
+      "TRY",
+      "TTD",
+      "TWD",
+      "TZS",
+      "UAH",
+      "UGX",
+      "USD",
+      "USN",
+      "UYI",
+      "UYU",
+      "UYW",
+      "UZS",
+      "VED",
+      "VES",
+      "VND",
+      "VUV",
+      "WST",
+      "XAF",
+      "XAG",
+      "XAU",
+      "XBA",
+      "XBB",
+      "XBC",
+      "XBD",
+      "XCD",
+      "XDR",
+      "XOF",
+      "XPD",
+      "XPF",
+      "XPT",
+      "XSU",
+      "XTS",
+      "XUA",
+      "XXX",
+      "YER",
+      "ZAR",
+      "ZMW",
+      "ZWL"
+    ],
+    "blocker_codes": [
+      "UNKNOWN",
+      "NONE",
+      "INSUFFICIENT_EVIDENCE",
+      "DILIGENCE",
+      "DOCUMENTATION",
+      "FINANCING",
+      "REGULATORY",
+      "SHAREHOLDERS",
+      "SEPARATION",
+      "CREDIT",
+      "TIMING",
+      "OTHER"
+    ],
+    "owner_roles": [
+      "UNASSIGNED",
+      "COVERAGE_BANKER",
+      "TREASURY_ADVISORY",
+      "FINANCING_TEAM",
+      "EXECUTION_TEAM"
+    ],
+    "claim_predicates": [
+      "NORDIC_NEXUS",
+      "EVENT_TYPE",
+      "LIFECYCLE_PHASE",
+      "EVENT_COMPLETION",
+      "PARTY_ROLE",
+      "CONSIDERATION_CURRENCY",
+      "BUYER_FUNDING_CURRENCY",
+      "SELLER_PROCEEDS_CURRENCY",
+      "FUNDING_STATUS",
+      "MILESTONE_STATUS",
+      "CONDITION_STATUS",
+      "HEDGE_EXECUTION",
+      "SOURCE_EXCERPT",
+      "OTHER"
+    ],
+    "nexus_roles": [
+      "DOMICILE",
+      "OPERATIONS",
+      "LISTING",
+      "ASSETS",
+      "GOVERNING_LAW",
+      "AUTHORITY_JURISDICTION"
+    ],
+    "state_dimensions": [
+      "LIFECYCLE_PHASE",
+      "DISPOSITION",
+      "OUTCOME",
+      "WORKSTREAM_STATUS"
+    ],
+    "transition_reasons": [
+      "SOURCE_UPDATE",
+      "ANALYST_CORRECTION",
+      "CONDITION_CHANGE",
+      "RESTART",
+      "SUPERSESSION",
+      "OTHER"
+    ],
+    "ontology_versions": [
+      "1.0.0"
+    ],
+    "separation_methods": [
+      "NONE",
+      "CARVE_OUT",
+      "SPIN_OFF",
+      "SPLIT_OFF",
+      "ASSET_TRANSFER",
+      "DEMERGER",
+      "EQUITY_CARVE_OUT",
+      "UNKNOWN"
+    ],
+    "programme_types": [
+      "TAKE_PRIVATE",
+      "DUAL_TRACK",
+      "STRATEGIC_REVIEW",
+      "OTHER"
+    ],
+    "entity_types": [
+      "COMPANY",
+      "ACQUISITION_VEHICLE",
+      "FUND",
+      "INDIVIDUAL",
+      "TRUST",
+      "PARTNERSHIP",
+      "PUBLIC_AUTHORITY",
+      "OTHER"
+    ],
+    "rate_tenors": [
+      "UNKNOWN",
+      "OVERNIGHT",
+      "1M",
+      "3M",
+      "6M",
+      "12M",
+      "OTHER"
+    ],
+    "commodity_units": [
+      "MWH",
+      "KWH",
+      "BBL",
+      "MMBTU",
+      "TONNE",
+      "TROY_OUNCE",
+      "TONNE_CO2E",
+      "LITRE",
+      "OTHER"
+    ],
+    "price_indices": [
+      "BRENT",
+      "WTI",
+      "TTF",
+      "NORD_POOL_SYSTEM",
+      "HICP",
+      "CPI_SE",
+      "OTHER"
+    ],
+    "funding_priorities": [
+      "UNKNOWN",
+      "SENIOR_SECURED",
+      "SENIOR_UNSECURED",
+      "SUBORDINATED",
+      "MEZZANINE",
+      "EQUITY"
+    ]
+  },
+  "workstreams": {
+    "COMMERCIAL": [
+      "NOT_STARTED",
+      "ACTIVE",
+      "TERMS_PROPOSED",
+      "TERMS_AGREED",
+      "COMPLETE"
+    ],
+    "DILIGENCE": [
+      "NOT_STARTED",
+      "SCOPING",
+      "ACCESS_GRANTED",
+      "IN_PROGRESS",
+      "ISSUES_IDENTIFIED",
+      "REMEDIATION",
+      "SUBSTANTIALLY_COMPLETE",
+      "COMPLETE"
+    ],
+    "DOCUMENTATION": [
+      "NOT_STARTED",
+      "DRAFTING",
+      "NEGOTIATING",
+      "AGREED_FORM",
+      "EXECUTED",
+      "EFFECTIVE"
+    ],
+    "FINANCING": [
+      "NOT_ASSESSED",
+      "CAPACITY_ASSESSED",
+      "MARKET_SOUNDING",
+      "INDICATIVE_TERMS",
+      "CREDIT_APPROVED",
+      "COMMITTED",
+      "DOCUMENTED",
+      "AVAILABLE",
+      "PARTIALLY_DRAWN",
+      "DRAWN",
+      "REFINANCED",
+      "REPAID"
+    ],
+    "REGULATORY": [
+      "APPLICABILITY_UNASSESSED",
+      "NOT_REQUIRED",
+      "PRE_NOTIFICATION",
+      "FILED",
+      "IN_REVIEW",
+      "IN_DEPTH_REVIEW",
+      "REMEDIES_NEGOTIATED",
+      "CONDITIONAL_CLEARANCE",
+      "CLEARED",
+      "PROHIBITED",
+      "WITHDRAWN"
+    ],
+    "SHAREHOLDER": [
+      "NOT_ASSESSED",
+      "NOT_REQUIRED",
+      "DOCUMENTATION",
+      "MEETING_OR_ELECTION_SCHEDULED",
+      "VOTING_OR_ELECTION_OPEN",
+      "APPROVED",
+      "REJECTED"
+    ],
+    "SEPARATION": [
+      "NOT_REQUIRED",
+      "SCOPING",
+      "DESIGN",
+      "IMPLEMENTATION",
+      "DAY_ONE_READY",
+      "LEGALLY_SEPARATED",
+      "TSA_ACTIVE",
+      "TSA_EXITED"
+    ],
+    "HEDGING": [
+      "NOT_ASSESSED",
+      "EXPOSURE_IDENTIFIED",
+      "DATA_VALIDATED",
+      "STRATEGY_REVIEW",
+      "INDICATIVE_QUOTE",
+      "CREDIT_AND_DOCUMENTATION_READY",
+      "EXECUTABLE_QUOTE",
+      "EXECUTED",
+      "MONITORED",
+      "RESIZED",
+      "ROLLED",
+      "SETTLED",
+      "TERMINATED"
+    ],
+    "CLOSING": [
+      "NOT_READY",
+      "CHECKLIST_OPEN",
+      "FUNDS_FLOW_AGREED",
+      "CONDITIONS_CONFIRMED",
+      "READY",
+      "FUNDED",
+      "SETTLED",
+      "OWNERSHIP_EFFECTIVE",
+      "RECONCILED"
+    ]
+  },
+  "schemas": {
+    "EventProgramme": {
+      "idField": "programme_id",
+      "fields": {
+        "programme_id": {
+          "type": "id",
+          "required": true
+        },
+        "title": {
+          "type": "text"
+        },
+        "sponsor_entity_id": {
+          "type": "ref",
+          "ref": "Entity"
+        },
+        "objective": {
+          "type": "enum",
+          "enum": "economic_purposes"
+        },
+        "status": {
+          "type": "enum",
+          "enum": "programme_statuses"
+        },
+        "created_at": {
+          "type": "datetime"
+        },
+        "version": {
+          "type": "integer"
+        },
+        "programme_type": {
+          "type": "enum",
+          "enum": "programme_types"
+        }
+      }
+    },
+    "CorporateEvent": {
+      "idField": "event_id",
+      "fields": {
+        "event_id": {
+          "type": "id",
+          "required": true
+        },
+        "programme_id": {
+          "type": "ref",
+          "ref": "EventProgramme"
+        },
+        "event_type_id": {
+          "type": "enum",
+          "enum": "event_types"
+        },
+        "title": {
+          "type": "text"
+        },
+        "lifecycle_phase": {
+          "type": "enum",
+          "enum": "lifecycle_phases"
+        },
+        "disposition": {
+          "type": "enum",
+          "enum": "dispositions"
+        },
+        "outcome": {
+          "type": "enum",
+          "enum": "outcomes"
+        },
+        "legal_structure": {
+          "type": "enum",
+          "enum": "routes"
+        },
+        "jurisdictions": {
+          "type": "array",
+          "items": "country"
+        },
+        "rulebook_version": {
+          "type": "text"
+        },
+        "expected_close_start": {
+          "type": "datetime"
+        },
+        "expected_close_end": {
+          "type": "datetime"
+        },
+        "actual_completion_at": {
+          "type": "datetime"
+        },
+        "owner_entity_id": {
+          "type": "ref",
+          "ref": "Entity"
+        },
+        "confidentiality": {
+          "type": "enum",
+          "enum": "access_scopes"
+        },
+        "model_version": {
+          "type": "enum",
+          "enum": "ontology_versions"
+        },
+        "economic_purpose": {
+          "type": "enum",
+          "enum": "economic_purposes"
+        },
+        "execution_route": {
+          "type": "enum",
+          "enum": "routes"
+        },
+        "ownership_outcome": {
+          "type": "enum",
+          "enum": "control_outcomes"
+        },
+        "ownership_transition": {
+          "type": "enum",
+          "enum": "ownership_transitions"
+        },
+        "financing_structure": {
+          "type": "enum",
+          "enum": "financing_structures"
+        },
+        "initiation": {
+          "type": "enum",
+          "enum": "initiation"
+        },
+        "board_support": {
+          "type": "enum",
+          "enum": "support"
+        },
+        "offer_obligation": {
+          "type": "enum",
+          "enum": "offer_obligation"
+        },
+        "scope": {
+          "type": "enum",
+          "enum": "perimeter_scopes"
+        },
+        "consideration_types": {
+          "type": "array",
+          "items": "enum",
+          "enum": "consideration_types"
+        },
+        "separation_method": {
+          "type": "enum",
+          "enum": "separation_methods"
+        }
+      }
+    },
+    "EventRelationship": {
+      "idField": "relationship_id",
+      "fields": {
+        "relationship_id": {
+          "type": "id",
+          "required": true
+        },
+        "from_event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "to_event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "relationship_type": {
+          "type": "enum",
+          "enum": "event_relationship_types"
+        },
+        "exclusivity_group_id": {
+          "type": "text"
+        },
+        "effective_from": {
+          "type": "datetime"
+        },
+        "effective_to": {
+          "type": "datetime"
+        }
+      }
+    },
+    "Entity": {
+      "idField": "entity_id",
+      "fields": {
+        "entity_id": {
+          "type": "id",
+          "required": true
+        },
+        "legal_name": {
+          "type": "text"
+        },
+        "LEI": {
+          "type": "text"
+        },
+        "registration_number": {
+          "type": "text"
+        },
+        "domicile": {
+          "type": "country"
+        },
+        "reporting_currency": {
+          "type": "currency"
+        },
+        "entity_type": {
+          "type": "enum",
+          "enum": "entity_types"
+        },
+        "parent_entity_id": {
+          "type": "ref",
+          "ref": "Entity"
+        }
+      }
+    },
+    "EventParty": {
+      "idField": "event_party_id",
+      "fields": {
+        "event_party_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "entity_id": {
+          "type": "ref",
+          "ref": "Entity",
+          "required": true
+        },
+        "role": {
+          "type": "enum",
+          "enum": "party_roles"
+        },
+        "consortium_id": {
+          "type": "text"
+        },
+        "ownership_before": {
+          "type": "percentage"
+        },
+        "ownership_after": {
+          "type": "percentage"
+        },
+        "control_rights": {
+          "type": "enum",
+          "enum": "control_rights"
+        },
+        "valid_from": {
+          "type": "datetime"
+        },
+        "valid_to": {
+          "type": "datetime"
+        },
+        "party_class": {
+          "type": "enum",
+          "enum": "party_classes"
+        }
+      }
+    },
+    "TransactionPerimeter": {
+      "idField": "perimeter_id",
+      "fields": {
+        "perimeter_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "included_entity_ids": {
+          "type": "array",
+          "items": "ref",
+          "ref": "Entity"
+        },
+        "excluded_entity_ids": {
+          "type": "array",
+          "items": "ref",
+          "ref": "Entity"
+        },
+        "assets": {
+          "type": "json"
+        },
+        "geography": {
+          "type": "json"
+        },
+        "ownership_percent": {
+          "type": "percentage"
+        },
+        "perimeter_version": {
+          "type": "integer"
+        }
+      }
+    },
+    "Pursuit": {
+      "idField": "pursuit_id",
+      "fields": {
+        "pursuit_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "bidder_entity_id": {
+          "type": "ref",
+          "ref": "Entity",
+          "required": true
+        },
+        "round": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "enum",
+          "enum": "pursuit_statuses"
+        },
+        "bid_id": {
+          "type": "ref",
+          "ref": "Bid"
+        },
+        "exclusivity_start": {
+          "type": "datetime"
+        },
+        "exclusivity_end": {
+          "type": "datetime"
+        }
+      }
+    },
+    "Bid": {
+      "idField": "bid_id",
+      "fields": {
+        "bid_id": {
+          "type": "id",
+          "required": true
+        },
+        "pursuit_id": {
+          "type": "ref",
+          "ref": "Pursuit",
+          "required": true
+        },
+        "submitted_at": {
+          "type": "datetime"
+        },
+        "binding_status": {
+          "type": "enum",
+          "enum": "binding_statuses"
+        },
+        "price_currency": {
+          "type": "currency"
+        },
+        "equity_value": {
+          "type": "decimal"
+        },
+        "enterprise_value": {
+          "type": "decimal"
+        },
+        "assumed_debt": {
+          "type": "decimal"
+        },
+        "cash_component": {
+          "type": "decimal"
+        },
+        "stock_component": {
+          "type": "decimal"
+        },
+        "conditions": {
+          "type": "json"
+        },
+        "expires_at": {
+          "type": "datetime"
+        },
+        "source_claim_id": {
+          "type": "ref",
+          "ref": "Claim"
+        }
+      }
+    },
+    "WorkstreamInstance": {
+      "idField": "workstream_id",
+      "fields": {
+        "workstream_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "pursuit_id": {
+          "type": "ref",
+          "ref": "Pursuit"
+        },
+        "workstream_type": {
+          "type": "enum",
+          "enum": "workstream_types"
+        },
+        "status": {
+          "type": "workstream_status"
+        },
+        "owner": {
+          "type": "text"
+        },
+        "blocker": {
+          "type": "enum",
+          "enum": "blocker_codes"
+        },
+        "next_action": {
+          "type": "enum",
+          "enum": "advisory_actions"
+        },
+        "updated_at": {
+          "type": "datetime"
+        }
+      }
+    },
+    "MilestoneDefinition": {
+      "idField": "milestone_definition_id",
+      "fields": {
+        "milestone_definition_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_type_id": {
+          "type": "enum",
+          "enum": "event_types"
+        },
+        "label": {
+          "type": "text"
+        },
+        "display_order": {
+          "type": "integer"
+        },
+        "workstream_type": {
+          "type": "enum",
+          "enum": "workstream_types"
+        },
+        "optionality_rule": {
+          "type": "text"
+        },
+        "evidence_requirement": {
+          "type": "text"
+        },
+        "rulebook_overlay": {
+          "type": "text"
+        }
+      }
+    },
+    "MilestoneOccurrence": {
+      "idField": "milestone_occurrence_id",
+      "fields": {
+        "milestone_occurrence_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "pursuit_id": {
+          "type": "ref",
+          "ref": "Pursuit"
+        },
+        "milestone_definition_id": {
+          "type": "ref",
+          "ref": "MilestoneDefinition",
+          "required": true
+        },
+        "status": {
+          "type": "enum",
+          "enum": "milestone_statuses"
+        },
+        "occurred_at": {
+          "type": "datetime"
+        },
+        "date_precision": {
+          "type": "enum",
+          "enum": "date_precisions"
+        },
+        "observed_at": {
+          "type": "datetime"
+        },
+        "source_claim_ids": {
+          "type": "array",
+          "items": "ref",
+          "ref": "Claim"
+        },
+        "supersedes_occurrence_id": {
+          "type": "ref",
+          "ref": "MilestoneOccurrence"
+        }
+      }
+    },
+    "Dependency": {
+      "idField": "dependency_id",
+      "fields": {
+        "dependency_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "predecessor_id": {
+          "type": "any_ref",
+          "required": true
+        },
+        "successor_id": {
+          "type": "any_ref",
+          "required": true
+        },
+        "dependency_type": {
+          "type": "enum",
+          "enum": "dependency_types"
+        },
+        "logic_group": {
+          "type": "enum",
+          "enum": "logic_groups"
+        },
+        "required_status": {
+          "type": "enum",
+          "enum": "milestone_statuses"
+        },
+        "applicability": {
+          "type": "text"
+        },
+        "waiver_rule": {
+          "type": "text"
+        },
+        "rule_source": {
+          "type": "text"
+        },
+        "version": {
+          "type": "integer"
+        }
+      }
+    },
+    "Condition": {
+      "idField": "condition_id",
+      "fields": {
+        "condition_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "condition_type": {
+          "type": "enum",
+          "enum": "condition_types"
+        },
+        "authority_or_counterparty": {
+          "type": "text"
+        },
+        "jurisdiction": {
+          "type": "country"
+        },
+        "state": {
+          "type": "enum",
+          "enum": "condition_states"
+        },
+        "deadline": {
+          "type": "datetime"
+        },
+        "waiver_permitted": {
+          "type": "boolean"
+        },
+        "waiver_holder": {
+          "type": "text"
+        },
+        "approval_expiry": {
+          "type": "datetime"
+        },
+        "evidence_claim_id": {
+          "type": "ref",
+          "ref": "Claim"
+        }
+      }
+    },
+    "ApprovalCase": {
+      "idField": "approval_case_id",
+      "fields": {
+        "approval_case_id": {
+          "type": "id",
+          "required": true
+        },
+        "condition_id": {
+          "type": "ref",
+          "ref": "Condition",
+          "required": true
+        },
+        "filing_at": {
+          "type": "datetime"
+        },
+        "completeness_at": {
+          "type": "datetime"
+        },
+        "stage": {
+          "type": "enum",
+          "enum": "approval_stages"
+        },
+        "decision_at": {
+          "type": "datetime"
+        },
+        "decision": {
+          "type": "enum",
+          "enum": "approval_decisions"
+        },
+        "remedy": {
+          "type": "text"
+        },
+        "appeal_state": {
+          "type": "enum",
+          "enum": "appeal_states"
+        },
+        "source_claim_ids": {
+          "type": "array",
+          "items": "ref",
+          "ref": "Claim"
+        }
+      }
+    },
+    "FundingInstrument": {
+      "idField": "funding_id",
+      "fields": {
+        "funding_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "borrower_id": {
+          "type": "ref",
+          "ref": "Entity",
+          "required": true
+        },
+        "instrument_type": {
+          "type": "enum",
+          "enum": "funding_instruments"
+        },
+        "currency": {
+          "type": "currency"
+        },
+        "committed_amount": {
+          "type": "decimal"
+        },
+        "drawn_amount": {
+          "type": "decimal"
+        },
+        "availability_end": {
+          "type": "datetime"
+        },
+        "maturity": {
+          "type": "datetime"
+        },
+        "rate_index": {
+          "type": "enum",
+          "enum": "rate_indices"
+        },
+        "margin": {
+          "type": "decimal"
+        },
+        "fixed_rate": {
+          "type": "decimal"
+        },
+        "amortisation": {
+          "type": "json"
+        },
+        "priority": {
+          "type": "enum",
+          "enum": "funding_priorities"
+        },
+        "guarantee": {
+          "type": "json"
+        },
+        "security": {
+          "type": "json"
+        },
+        "conditions": {
+          "type": "json"
+        },
+        "certainty_status": {
+          "type": "enum",
+          "enum": "funding_certainties"
+        },
+        "rate_profile": {
+          "type": "enum",
+          "enum": "rate_profiles"
+        }
+      }
+    },
+    "EconomicLeg": {
+      "idField": "leg_id",
+      "fields": {
+        "leg_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "funding_id": {
+          "type": "ref",
+          "ref": "FundingInstrument"
+        },
+        "payer_id": {
+          "type": "ref",
+          "ref": "Entity"
+        },
+        "payee_id": {
+          "type": "ref",
+          "ref": "Entity"
+        },
+        "flow_type": {
+          "type": "enum",
+          "enum": "flow_types"
+        },
+        "asset_or_instrument": {
+          "type": "text"
+        },
+        "currency": {
+          "type": "currency"
+        },
+        "amount_min": {
+          "type": "decimal"
+        },
+        "amount_base": {
+          "type": "decimal"
+        },
+        "amount_max": {
+          "type": "decimal"
+        },
+        "measurement_basis": {
+          "type": "enum",
+          "enum": "measurement_bases"
+        },
+        "gross_net_basis": {
+          "type": "enum",
+          "enum": "gross_net_bases"
+        },
+        "expected_settlement_start": {
+          "type": "datetime"
+        },
+        "expected_settlement_end": {
+          "type": "datetime"
+        },
+        "contingency": {
+          "type": "json"
+        },
+        "restriction": {
+          "type": "json"
+        },
+        "source_claim_id": {
+          "type": "ref",
+          "ref": "Claim"
+        },
+        "internal_group_flag": {
+          "type": "boolean"
+        },
+        "parent_leg_id": {
+          "type": "ref",
+          "ref": "EconomicLeg"
+        },
+        "mutually_exclusive_group_id": {
+          "type": "text"
+        }
+      }
+    },
+    "RiskExposure": {
+      "idField": "exposure_id",
+      "fields": {
+        "exposure_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "leg_ids": {
+          "type": "array",
+          "items": "ref",
+          "ref": "EconomicLeg"
+        },
+        "exposed_entity_id": {
+          "type": "ref",
+          "ref": "Entity",
+          "required": true
+        },
+        "risk_type": {
+          "type": "enum",
+          "enum": "risk_types"
+        },
+        "risk_currency": {
+          "type": "currency"
+        },
+        "functional_currency": {
+          "type": "currency"
+        },
+        "reporting_currency": {
+          "type": "currency"
+        },
+        "direction": {
+          "type": "enum",
+          "enum": "directions"
+        },
+        "notional": {
+          "type": "decimal"
+        },
+        "delta_equivalent": {
+          "type": "decimal"
+        },
+        "start_at": {
+          "type": "datetime"
+        },
+        "end_at": {
+          "type": "datetime"
+        },
+        "rate_tenor": {
+          "type": "enum",
+          "enum": "rate_tenors"
+        },
+        "commodity_unit": {
+          "type": "enum",
+          "enum": "commodity_units"
+        },
+        "underlying_price_index": {
+          "type": "enum",
+          "enum": "price_indices"
+        },
+        "probability_model_id": {
+          "type": "ref",
+          "ref": "Forecast"
+        },
+        "estimation_status": {
+          "type": "enum",
+          "enum": "estimation_statuses"
+        },
+        "exposure_status": {
+          "type": "enum",
+          "enum": "exposure_statuses"
+        }
+      }
+    },
+    "Hedge": {
+      "idField": "hedge_id",
+      "fields": {
+        "hedge_id": {
+          "type": "id",
+          "required": true
+        },
+        "exposure_ids": {
+          "type": "array",
+          "items": "ref",
+          "ref": "RiskExposure"
+        },
+        "counterparty_id": {
+          "type": "ref",
+          "ref": "Entity"
+        },
+        "product": {
+          "type": "enum",
+          "enum": "hedge_products"
+        },
+        "currencies": {
+          "type": "array",
+          "items": "currency"
+        },
+        "notional": {
+          "type": "decimal"
+        },
+        "strike_or_fixed_rate": {
+          "type": "decimal"
+        },
+        "trade_at": {
+          "type": "datetime"
+        },
+        "value_at": {
+          "type": "datetime"
+        },
+        "maturity": {
+          "type": "datetime"
+        },
+        "close_condition": {
+          "type": "text"
+        },
+        "contingent_definition": {
+          "type": "json"
+        },
+        "expiry": {
+          "type": "datetime"
+        },
+        "extension_terms": {
+          "type": "json"
+        },
+        "unwind_terms": {
+          "type": "json"
+        },
+        "credit_status": {
+          "type": "enum",
+          "enum": "credit_statuses"
+        },
+        "documentation_status": {
+          "type": "enum",
+          "enum": "documentation_statuses"
+        },
+        "accounting_designation": {
+          "type": "enum",
+          "enum": "accounting_designations"
+        },
+        "notional_currency": {
+          "type": "currency"
+        }
+      }
+    },
+    "SourceDocument": {
+      "idField": "source_id",
+      "fields": {
+        "source_id": {
+          "type": "id",
+          "required": true
+        },
+        "url_or_internal_ref": {
+          "type": "text"
+        },
+        "issuer": {
+          "type": "text"
+        },
+        "source_type": {
+          "type": "enum",
+          "enum": "source_types"
+        },
+        "publication_at": {
+          "type": "datetime"
+        },
+        "retrieved_at": {
+          "type": "datetime"
+        },
+        "document_hash": {
+          "type": "text"
+        },
+        "access_scope": {
+          "type": "enum",
+          "enum": "access_scopes"
+        },
+        "language": {
+          "type": "text"
+        }
+      }
+    },
+    "Claim": {
+      "idField": "claim_id",
+      "fields": {
+        "claim_id": {
+          "type": "id",
+          "required": true
+        },
+        "source_id": {
+          "type": "ref",
+          "ref": "SourceDocument",
+          "required": true
+        },
+        "subject_id": {
+          "type": "any_ref",
+          "required": true
+        },
+        "predicate": {
+          "type": "enum",
+          "enum": "claim_predicates"
+        },
+        "value": {
+          "type": "json"
+        },
+        "unit": {
+          "type": "text"
+        },
+        "currency": {
+          "type": "currency"
+        },
+        "effective_at": {
+          "type": "datetime"
+        },
+        "observed_at": {
+          "type": "datetime"
+        },
+        "evidence_excerpt": {
+          "type": "text"
+        },
+        "assertion_type": {
+          "type": "enum",
+          "enum": "assertion_types"
+        },
+        "evidence_confidence": {
+          "type": "probability"
+        },
+        "review_state": {
+          "type": "enum",
+          "enum": "review_states"
+        },
+        "supersedes_claim_id": {
+          "type": "ref",
+          "ref": "Claim"
+        }
+      }
+    },
+    "StateTransition": {
+      "idField": "transition_id",
+      "fields": {
+        "transition_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "dimension": {
+          "type": "enum",
+          "enum": "state_dimensions"
+        },
+        "prior_value": {
+          "type": "json"
+        },
+        "new_value": {
+          "type": "json"
+        },
+        "effective_at": {
+          "type": "datetime"
+        },
+        "recorded_at": {
+          "type": "datetime"
+        },
+        "actor": {
+          "type": "text"
+        },
+        "reason": {
+          "type": "enum",
+          "enum": "transition_reasons"
+        },
+        "supporting_claim_ids": {
+          "type": "array",
+          "items": "ref",
+          "ref": "Claim"
+        },
+        "supersedes_transition_id": {
+          "type": "ref",
+          "ref": "StateTransition"
+        },
+        "workstream_id": {
+          "type": "ref",
+          "ref": "WorkstreamInstance"
+        }
+      }
+    },
+    "Forecast": {
+      "idField": "forecast_id",
+      "fields": {
+        "forecast_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "as_of": {
+          "type": "datetime"
+        },
+        "horizon": {
+          "type": "enum",
+          "enum": "forecast_horizons"
+        },
+        "target": {
+          "type": "enum",
+          "enum": "forecast_targets"
+        },
+        "estimate": {
+          "type": "json"
+        },
+        "low": {
+          "type": "json"
+        },
+        "high": {
+          "type": "json"
+        },
+        "model_version": {
+          "type": "text"
+        },
+        "assumptions": {
+          "type": "json"
+        },
+        "approval_state": {
+          "type": "enum",
+          "enum": "approval_states"
+        },
+        "estimate_unit": {
+          "type": "enum",
+          "enum": "forecast_units"
+        },
+        "date_precision": {
+          "type": "enum",
+          "enum": "date_precisions"
+        }
+      }
+    },
+    "Feedback": {
+      "idField": "feedback_id",
+      "fields": {
+        "feedback_id": {
+          "type": "id",
+          "required": true
+        },
+        "target_type": {
+          "type": "enum",
+          "enum": "feedback_targets"
+        },
+        "target_id": {
+          "type": "any_ref",
+          "required": true
+        },
+        "proposed_value": {
+          "type": "json"
+        },
+        "corrected_value": {
+          "type": "json"
+        },
+        "reason": {
+          "type": "text"
+        },
+        "annotator_role": {
+          "type": "enum",
+          "enum": "annotator_roles"
+        },
+        "created_at": {
+          "type": "datetime"
+        },
+        "adjudication": {
+          "type": "enum",
+          "enum": "feedback_adjudications"
+        },
+        "ontology_version": {
+          "type": "enum",
+          "enum": "ontology_versions"
+        }
+      }
+    },
+    "Opportunity": {
+      "idField": "opportunity_id",
+      "fields": {
+        "opportunity_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "client_entity_id": {
+          "type": "ref",
+          "ref": "Entity"
+        },
+        "exposure_id": {
+          "type": "ref",
+          "ref": "RiskExposure"
+        },
+        "product_family": {
+          "type": "enum",
+          "enum": "product_families"
+        },
+        "evidence_status": {
+          "type": "enum",
+          "enum": "evidence_statuses"
+        },
+        "urgency": {
+          "type": "enum",
+          "enum": "urgencies"
+        },
+        "potential_notional": {
+          "type": "decimal"
+        },
+        "commercial_owner": {
+          "type": "enum",
+          "enum": "owner_roles"
+        },
+        "next_action": {
+          "type": "enum",
+          "enum": "advisory_actions"
+        },
+        "decision_deadline": {
+          "type": "datetime"
+        },
+        "status": {
+          "type": "enum",
+          "enum": "opportunity_statuses"
+        },
+        "exposure_status": {
+          "type": "enum",
+          "enum": "exposure_statuses"
+        },
+        "rationale_codes": {
+          "type": "array",
+          "items": "enum",
+          "enum": "rationale_codes"
+        },
+        "ficc_score": {
+          "type": "score"
+        }
+      }
+    },
+    "EventJurisdiction": {
+      "idField": "jurisdiction_id",
+      "fields": {
+        "jurisdiction_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "country": {
+          "type": "country"
+        },
+        "nexus_entity_id": {
+          "type": "ref",
+          "ref": "Entity",
+          "required": true
+        },
+        "nexus_claim_id": {
+          "type": "ref",
+          "ref": "Claim",
+          "required": true
+        },
+        "nexus_role": {
+          "type": "enum",
+          "enum": "nexus_roles"
+        }
+      }
+    },
+    "EventTypeTag": {
+      "idField": "tag_id",
+      "fields": {
+        "tag_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "event_type_id": {
+          "type": "enum",
+          "enum": "event_types"
+        }
+      }
+    },
+    "EventEntityPerimeter": {
+      "idField": "allocation_id",
+      "fields": {
+        "allocation_id": {
+          "type": "id",
+          "required": true
+        },
+        "perimeter_id": {
+          "type": "ref",
+          "ref": "TransactionPerimeter",
+          "required": true
+        },
+        "entity_id": {
+          "type": "ref",
+          "ref": "Entity",
+          "required": true
+        },
+        "included": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ExposureLegAllocation": {
+      "idField": "allocation_id",
+      "fields": {
+        "allocation_id": {
+          "type": "id",
+          "required": true
+        },
+        "exposure_id": {
+          "type": "ref",
+          "ref": "RiskExposure"
+        },
+        "leg_id": {
+          "type": "ref",
+          "ref": "EconomicLeg",
+          "required": true
+        },
+        "allocated_notional": {
+          "type": "decimal"
+        },
+        "currency": {
+          "type": "currency"
+        }
+      }
+    },
+    "HedgeExposureAllocation": {
+      "idField": "allocation_id",
+      "fields": {
+        "allocation_id": {
+          "type": "id",
+          "required": true
+        },
+        "hedge_id": {
+          "type": "ref",
+          "ref": "Hedge",
+          "required": true
+        },
+        "exposure_id": {
+          "type": "ref",
+          "ref": "RiskExposure"
+        },
+        "allocated_notional": {
+          "type": "decimal"
+        },
+        "currency": {
+          "type": "currency"
+        }
+      }
+    },
+    "ClaimSupport": {
+      "idField": "support_id",
+      "fields": {
+        "support_id": {
+          "type": "id",
+          "required": true
+        },
+        "target_type": {
+          "type": "enum",
+          "enum": "feedback_targets"
+        },
+        "target_id": {
+          "type": "any_ref"
+        },
+        "claim_id": {
+          "type": "ref",
+          "ref": "Claim",
+          "required": true
+        }
+      }
+    },
+    "EventSource": {
+      "idField": "event_source_id",
+      "fields": {
+        "event_source_id": {
+          "type": "id",
+          "required": true
+        },
+        "event_id": {
+          "type": "ref",
+          "ref": "CorporateEvent",
+          "required": true
+        },
+        "source_id": {
+          "type": "ref",
+          "ref": "SourceDocument",
+          "required": true
+        }
+      }
+    }
+  },
+  "supplemental_enum_note": "Core enums copied verbatim from supplied JSON; dimension IDs are stable uppercase mappings of the supplied design document. Supporting enums close gaps in the logical dictionary and are application-specific."
+}

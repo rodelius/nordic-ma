@@ -20,7 +20,7 @@ export function parseFeed(xml:string,now=Date.now()):SourceItem[]{
   if(!isCisionStory(url))continue;
   // Broad process candidate screen, not a factual M&A classification or Nordic claim.
   const text=headline+' '+excerpt;
-  if(!/acquir|acquis|förvär|divest|avyttr|merger|takeover|public offer|tender offer|strategic review|sale process|exclusive talks|competing bid|fusion|opkøb|oppkjøp|yritysosto/i.test(text))continue;
+  if(!/acquir|acquis|förvär|divest|avyttr|merger|takeover|public offer|tender offer|strategic review|sale process|exclusive talks|competing bid|fusion|opkøb|oppkjøp|yritysosto|\bIPO\b|initial public offering|rights issue|bond issu|refinanc|project financ|restructur|spin.off|demerger|capital return|special dividend/i.test(text))continue;
   // Routine own-share trades can mention "acquired" but are not corporate M&A.
   if(/transaction[s]? in own shares|repurchase[s]? of (?:own |treasury )?shares|share buyback/i.test(headline)&&!/merger|takeover|acquisition of (?:a |the )?(?:business|company|stake|subsidiary)/i.test(headline))continue;
   const published_at=new Date(time).toISOString();

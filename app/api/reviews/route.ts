@@ -1,39 +1,15 @@
 import {requirePilotReviewer} from '@/lib/supabase/server';
 import {stage2Enabled} from '@/lib/live-config';
 import {pilotConfig} from '@/lib/pilot-config';
-import {learningState,learningEnabled} from '@/lib/learning-service';
-import {canonicalAnalysis,previewAssessment} from '@/lib/review-analysis';
-import {predict} from '@/lib/feedback-engine';
-import {validReviewInput} from '@/lib/review-fields';
-import {assessFicc} from '@/lib/ficc-advisory';
+import {learningState,suggest,learningEnabled} from '@/lib/learning-service';
+import {parseCorporateEventModel} from '@/lib/corporate-events';
 export const dynamic='force-dynamic';
-export async function GET(req:Request){
- if(!stage2Enabled())return Response.json({error:'Stage 2 is not enabled'},{status:403});
- try{const {client,user}=await requirePilotReviewer();const id=new URL(req.url).searchParams.get('sourceId');if(!id||id.length>128)throw Error('Choose a source item');
- const [source,draft,revisions]=await Promise.all([client.from('source_items').select('*').eq('id',id).single(),client.from('review_drafts').select('*').eq('source_id',id).eq('reviewer_id',user.id).maybeSingle(),client.from('review_revisions').select('version,note,changed_fields,latest_deal_updated,created_at').eq('source_id',id).order('version',{ascending:false}).limit(10)]);
- if(source.error)throw Error('Source item could not be loaded');if(draft.error||revisions.error)throw Error('Apply migration 005 to save and reopen reviews');
- let suggestion=null;
- if(learningEnabled()){try{const engine=await learningState(client),model=engine.active||engine.working;const prediction=predict(source.data.headline+'\n'+source.data.excerpt,model.examples.filter(c=>c.sourceId!==id&&(!source.data.deal_id||c.group!==source.data.deal_id)));suggestion={score:prediction.suggestedFiccScore,version:model.id,mode:engine.active?'active':'shadow',explanation:prediction.explanation,neighbors:prediction.neighbors};}catch{suggestion={score:null,mode:'unavailable',explanation:'Learning is unavailable; original values retained.'};}}
- return Response.json({suggestion,source:source.data,draft:draft.data,assessment:source.data.assessment||previewAssessment(JSON.stringify(source.data.analysis)),revisions:revisions.data});
- }catch(e){return Response.json({error:e instanceof Error?e.message:'Review could not be opened'},{status:400});}
-}
+export async function GET(req:Request){if(!stage2Enabled())return Response.json({error:'Stage 2 is not enabled'},{status:403});try{const {client,user}=await requirePilotReviewer(),id=new URL(req.url).searchParams.get('sourceId');if(!id||id.length>128)throw Error('Choose a source');const [source,draft,announcement]=await Promise.all([client.from('source_items').select('*').eq('id',id).single(),client.from('corporate_review_drafts').select('*').eq('source_id',id).eq('reviewer_id',user.id).maybeSingle(),client.from('corporate_announcements').select('update_classification').eq('id',id).maybeSingle()]);if(source.error||draft.error)throw Error('Apply corporate-event migration 007');let modelVersion=0;if(source.data.corporate_model_id){const {data}=await client.from('corporate_event_models').select('revision').eq('model_id',source.data.corporate_model_id).single();modelVersion=data?.revision||0;}let suggestion=null;if(learningEnabled()){try{const state=await learningState(client);suggestion=suggest(state,source.data.headline+'\n'+source.data.excerpt);}catch{}}return Response.json({source:source.data,draft:draft.data,modelVersion,suggestion,updateClassification:announcement.data?.update_classification||'UNKNOWN'});}catch(e){return Response.json({error:(e as Error).message},{status:400});}}
 export async function POST(req:Request){
- if(!stage2Enabled())return Response.json({error:'Stage 2 is not enabled'},{status:403});
- if(req.headers.get('origin')!==pilotConfig().appUrl)return Response.json({error:'Invalid origin'},{status:403});
- try{const {client}=await requirePilotReviewer();const raw=await req.text();if(raw.length>180000)throw Error('Review request is too large');const input=JSON.parse(raw);
- if(typeof input.sourceId!=='string'||input.sourceId.length>128||typeof input.text!=='string'||input.text.length>64000||typeof input.note!=='string'||input.note.length>1000||!Number.isInteger(input.version)||input.version<0)throw Error('Invalid review payload');
- const reviewInput=input.reviewInput??null;if(reviewInput!==null&&(!validReviewInput(reviewInput)||JSON.stringify(reviewInput).length>64000))throw Error('Invalid review reference');
- const {data:source,error:lookup}=await client.from('source_items').select('*').eq('id',input.sourceId).single();if(lookup||!source)throw Error('Unknown source item');
- if(input.action==='draft'){
-  if(!Number.isInteger(input.draftRevision)||input.draftRevision<0)throw Error('Invalid draft revision');
-  const assessment=previewAssessment(input.text);const {data,error}=await client.rpc('save_review_draft',{p_source:source.id,p_text:input.text,p_note:input.note,p_assessment:assessment,p_expected:input.version,p_draft_revision:input.draftRevision,p_review_input:reviewInput});if(error)throw Error(error.message);
-  return Response.json({...data,assessment,message:assessment?'Draft and assessment saved. Approval and learning labels have not changed.':'Draft text saved. Complete valid evidence to calculate an assessment.'});
- }
- if(input.action!=='submit')throw Error('Invalid review action');
- let parsed;try{parsed=JSON.parse(input.text);}catch{throw Error('The JSON is invalid. Fix its syntax before approval, or save it as a draft.');}
- const deal=canonicalAnalysis(parsed,source);const assessment=assessFicc(deal);
- let model=null;if(learningEnabled()){const {data,error}=await client.from('learning_settings').select('active_model,use_learned_ranking').eq('id',1).single();if(error)throw Error('Learning settings could not be read');model=data.use_learned_ranking?data.active_model:null;}
- const {data,error}=await client.rpc('submit_review_assessment',{p_source:source.id,p_deal:deal,p_assessment:assessment,p_note:input.note,p_existing:input.existingId||null,p_expected:input.version,p_learning:learningEnabled(),p_model:model,p_review_input:reviewInput});if(error)throw Error(error.message);
- return Response.json({...data,message:data.correction?(data.latestDealUpdated?'Assessment correction saved to this source and the current transaction. No alert sent.':'Historical assessment correction saved. A newer transaction update was preserved. No alert sent.'):'Reviewed analysis and assessment saved.'});
- }catch(e){const error=e instanceof Error?e.message:'Review save failed';return Response.json({error},{status:/changed since|another session/.test(error)?409:400});}
+ if(!stage2Enabled())return Response.json({error:'Stage 2 is not enabled'},{status:403});if(req.headers.get('origin')!==pilotConfig().appUrl)return Response.json({error:'Invalid origin'},{status:403});
+ try{const {client}=await requirePilotReviewer();const text=await req.text();if(text.length>360000)throw Error('Review too large');const i=JSON.parse(text);if(typeof i.sourceId!=='string'||i.sourceId.length>128||typeof i.text!=='string'||i.text.length>150000||typeof i.note!=='string'||i.note.length>1000||!Number.isInteger(i.version)||i.version<0)throw Error('Invalid review payload');
+ if(i.action==='draft'){if(!Number.isInteger(i.draftRevision)||i.draftRevision<0)throw Error('Invalid draft version');const {data,error}=await client.rpc('save_corporate_draft',{p_source:i.sourceId,p_text:i.text,p_note:i.note,p_expected:i.version,p_draft_revision:i.draftRevision,p_review_input:i.reviewInput||null});if(error)throw Error(error.message);return Response.json(data);}
+ if(i.action!=='submit'||!Number.isInteger(i.modelVersion)||i.modelVersion<0||!['UNKNOWN','MATERIAL_UPDATE','NO_MATERIAL_CHANGE'].includes(i.updateClassification))throw Error('Invalid approval metadata');const graph=parseCorporateEventModel(JSON.parse(i.text));
+ const {data,error}=await client.rpc('submit_corporate_review',{p_source:i.sourceId,p_graph:graph,p_note:i.note,p_existing:i.existingId||null,p_expected:i.version,p_expected_model:i.modelVersion,p_update_classification:i.updateClassification,p_learning:learningEnabled(),p_review_input:i.reviewInput||null});if(error)throw Error(error.message);return Response.json({...data,message:data.correction?'Corporate-event correction saved with field-level feedback. No alert sent.':'Corporate event and source review saved.'});
+ }catch(e){const error=(e as Error).message;return Response.json({error},{status:/changed|conflict/.test(error)?409:400});}
 }

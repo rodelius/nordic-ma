@@ -1,0 +1,138 @@
+I recommend a composable corporate-event model: a common lifecycle, event-specific milestones, parallel workstreams and party-specific financial exposures. A single list of transaction stages will lose important information.
+
+I have created an extensive reference model covering 40 event templates, 526 milestones and 24 linked data entities.
+
+Corporate_Event_State_Model.zip
+
+The package contains a detailed design document and a machine-readable JSON catalogue. The catalogue is a starting ontology; legal dependencies and country-specific rules still need configuration.
+
+1. Separate transaction type from transaction structure
+
+Several of your examples describe different aspects of the same transaction.
+Dimension	Examples
+Economic objective	Acquisition, disposal, capital raising, refinancing, restructuring
+Execution route	Bilateral negotiation, auction, public offer, scheme, IPO, court process
+Ownership outcome	Minority investment, joint control, majority acquisition, full ownership
+Financing structure	LBO, corporate funding, bridge financing, project finance
+Separation method	Carve-out, spin-off, split-off, asset transfer
+Programme	Take-private, dual-track exit, strategic alternatives review
+
+
+For example, a sponsor-led take-private might contain a public offer, an LBO financing package, a carve-out and subsequent bond refinancing. These should be linked records, with controls against counting the acquisition value or cash flows several times.
+
+2. Use a common lifecycle, with independent workstreams
+
+The common lifecycle provides a consistent overview:
+
+Origination → Strategic review → Preparation → Engagement → Evaluation → Negotiation and selection → Commitment → Conditions and execution → Completion → Post-completion
+
+Alongside this, record separate states for:
+Workstream	Illustrative progression
+Due diligence	Scoping → Access granted → In progress → Issues identified → Substantially complete → Complete
+Documentation	Drafting → Negotiating → Agreed form → Executed → Effective
+Financing	Capacity assessed → Indicative terms → Credit approved → Committed → Available → Drawn → Refinanced
+Regulatory	Applicability assessed → Pre-notification → Filed → Review → Remedies → Clearance or prohibition
+Shareholders	Documentation → Meeting or election → Voting/acceptance → Result
+Separation	Perimeter defined → Design → Implementation → Day-one ready → Legal separation → TSA exit
+Hedging	Exposure identified → Validated → Strategy reviewed → Executable → Executed → Monitored → Settled
+Closing	Checklist open → Funds flow agreed → Conditions confirmed → Ready → Funded → Settled → Reconciled
+
+
+These are typical progressions, not mandatory sequences. Each authority should have its own approval record: one clearance does not establish that all regulatory conditions are fulfilled. The European Commission’s merger framework also distinguishes notification, review and permission to implement. European Union
+
+3. Event-specific process templates
+
+Below are the principal paths. The downloadable catalogue expands these into individual milestones.
+Event	Reference process
+Private acquisition	Strategic rationale → Target identification → Approach → NDA → Indicative offer → Management presentation → Diligence → SPA negotiation → Final bid → Selection/exclusivity → Financing commitment → SPA signing → Conditions → Closing → Adjustments/earn-out
+Sell-side auction	Exit review → Adviser appointment → Vendor diligence → Teaser → Buyer outreach → NDAs → Information memorandum → First-round bids → Shortlist → Management presentations → Confirmatory diligence → Final bids → Preferred bidder → Exclusivity → Signing → Closing
+Take-private	Sponsor thesis → Consortium → Approach → Permitted diligence → Equity/debt commitments → Firm offer decision → Public offer or scheme → Shareholder/regulatory processes → Settlement → Minority process → Delisting
+Public takeover offer	Approach/stake disclosure → Possible offer → Funding certainty → Firm offer → Offer document → Acceptance period → Board response → Regulatory review → Acceptance results → Conditions fulfilled → Unconditional offer → Settlement
+LBO financing	LBO model → Debt capacity → Lender sounding → Term sheets → Credit approval → Equity/debt commitments → Documentation/security → Draw conditions → Acquisition funding → Bridge takeout → Ongoing hedging
+Merger	Strategic dialogue → NDA → Valuation → Exchange ratio → Mutual diligence → Synergies → Governance agreement → Merger agreement → Shareholder/regulatory approvals → Legal effectiveness → Share exchange → Integration
+Minority/growth investment	Capital review → Investor outreach → Indicative terms → Valuation/governance → Diligence → Investment approval → Subscription/share purchase agreement → Consents → Funding → Governance rights effective
+Joint venture	Partner selection → Feasibility → Heads of terms → Contribution valuation → Diligence → Governance negotiation → JV agreement → Consents → Capital/asset contributions → Operations
+Divestiture/divestment	Portfolio review → Perimeter → Disposal route → Separation diligence → Buyer process → Bids → SPA → Separation/consents → Closing → Proceeds repatriation → Residual obligations
+Asset sale	Asset identification → Title/encumbrance checks → Valuation → Marketing → Technical/legal diligence → Agreement → Releases/consents → Payment → Title transfer
+Carve-out	Perimeter → Standalone accounts → Shared-services mapping → Legal/tax structure → Debt/cash allocation → Contract/employee allocation → Treasury/IT separation → TSA → Day-one readiness → Separation → TSA exit
+Spin-off/demerger	Strategic review → Perimeter → Tax/legal feasibility → Standalone accounts → Capital structure → Separation agreement → Approvals → Listing process if applicable → Record date → Distribution → Separate operations
+IPO	Feasibility → Readiness → Adviser appointment → Equity story → Governance/reporting → Diligence → Prospectus → Regulatory/exchange review → Investor education → Bookbuilding → Pricing/allocation → Trading → Settlement → Stabilisation
+Dual-track exit	Exit review → Shared preparation → Sale process and IPO process → Bid/investor feedback → Route comparison → Route selection → Alternative track paused/terminated → Selected route completed
+Loan refinancing	Maturity/liquidity review → Debt/hedge inventory → Funding strategy → Lender outreach → Terms → Credit approvals → Documentation → Signing → Draw conditions → Drawdown → Existing debt repayment → Hedge treatment
+Bond issuance	Funding plan → Ratings → Mandate → Documentation/diligence → Marketing → Launch → Bookbuilding → Pricing/allocation → Settlement → Existing debt redemption/proceeds deployment
+Amend-and-extend	Debt review → Lender approach → Consent thresholds → Proposed terms → Commitments → Amendment → Conditions → Revised terms effective → Hedge review
+Debt tender/exchange	Liability review → Eligible instruments → Offer terms → Launch → Participation/consents → Expiry → Acceptance/proration → Settlement → Cancellation
+Financial restructuring	Liquidity stress → Cash forecast → Advisers → Creditor mapping → Standstill → Business review → Options → Negotiation → Support agreement → Documentation → New money/debt changes → Effectiveness
+Formal restructuring	Procedure selection → Filing → Opening order → Stay/administrator where applicable → Claims → Plan/classes → Voting → Court confirmation where required → Plan effective → Exit financing → Emergence
+Distressed sale	Distress/filing → Seller authority → Accelerated marketing → Limited diligence → Bids → Funding proof → Selection → Agreement → Required approvals → Payment/transfer
+Project finance	Development → Permits → Technical studies → Offtake/concession → Construction contracts → Financial model → Lender diligence → Credit approval → Documentation → Financial close → Drawdowns → Construction → Completion tests → Operations
+
+
+The remaining templates cover court schemes, split-offs, equity carve-out IPOs, direct listings, follow-on offerings, rights issues, buybacks, special dividends, private debt, dividend recapitalisations, bridge takeouts, securitisations, sale-and-leasebacks, debt-for-equity swaps, operational restructuring, liquidation, continuation vehicles and strategic reviews.
+
+IPO templates should distinguish preparation, admission and trading from proceeds settlement. Nasdaq similarly separates readiness, documentation, application and admission, with requirements varying by market. Nasdaq
+
+4. Refine the acquisition stages in your example
+
+Your suggested stages are useful, but they mix evidence, activities and legally significant milestones.
+Your proposed label	Recommended treatment
+Rumoured	Evidence classification attached to a claim
+Planning	Lifecycle phase
+Non-disclosure signed	Dated milestone, specific to a party/pursuit
+Indication of intent	Distinguish expression of interest, indicative offer and non-binding IOI
+Letter of intent	Document with separately recorded binding and non-binding provisions
+Exclusivity	Agreement with scope, start, expiry and termination provisions
+Data room access	Access permission; not proof of completed diligence
+Quality of earnings	Financial diligence deliverable, possibly vendor- or buyer-commissioned
+Drafting SPA	Documentation workstream state
+Final binding bid	Bid record with validity, reservations and conditions
+Signing SPA	Executed agreement milestone
+Approvals	Individual conditions and authority decisions
+Closing	Event-specific legal/economic completion, supported by evidence
+
+
+In an auction, final bids often precede exclusivity. In a bilateral deal, exclusivity may precede confirmatory diligence. SPA drafting, diligence and financing commonly overlap.
+
+5. The underlying data model
+
+The principal relationships should be:
+Entity	Purpose
+Programme	Groups related events and alternative routes
+Corporate event	Defines the bounded ownership, capital or liability change
+Event relationship	Records “finances,” “requires,” “alternative to,” “separates” and similar links
+Entity/event party	Identifies buyers, sellers, targets, borrowers, investors and advisers
+Transaction perimeter	Defines included/excluded businesses, assets and liabilities
+Pursuit/bid	Preserves each bidder’s separate progress and offer revisions
+Workstream	Tracks parallel activity
+Milestone occurrence	Records what happened, when and with what evidence
+Condition/approval case	Tracks gates, authorities, deadlines, decisions and remedies
+Funding instrument	Separates committed, available and drawn financing
+Economic leg	Records a specific payment, receipt, contribution or distribution
+Risk exposure/hedge	Connects economic risks to named parties and actual contracts
+Source/claim	Preserves evidence, uncertainty and conflicting assertions
+Transition/feedback	Maintains history and reviewed corrections
+Forecast/opportunity	Separates predictions and commercial actions from established facts
+
+
+Every material fact should carry an effective date, observation date, source, evidence status and revision history.
+
+6. The FICC layer should begin with economic legs
+
+Headline transaction value is insufficient to identify a hedging need.
+
+For each payment or receipt, capture:
+- Who: payer, recipient and economically exposed entity.
+- What: purchase price, debt draw, repayment, fees, tax, dividend, capex or earn-out.
+- How much: currency, amount/range and gross/net basis.
+- When: settlement window, draw schedule and maturity.
+- Under what conditions: signing, closing, acceptance, approvals or other triggers.
+- What offsets it: accessible cash, same-currency financing and existing hedges.
+A EUR-based sponsor buying a Swedish target for SEK consideration may need to acquire SEK. A EUR-based selling shareholder receiving SEK may need the opposite conversion. These are separate exposures and opportunities.
+
+The model must also distinguish:
+
+Evidence confidence ≠ probability of completion ≠ commercial opportunity score.
+
+Likewise, financing committed ≠ financing drawn; IPO trading ≠ proceeds received; offer settlement ≠ squeeze-out completed; carve-out readiness ≠ disposal completed.
+
+Those distinctions are what make the model useful for both Corporate Finance process monitoring and timely FICC advice.

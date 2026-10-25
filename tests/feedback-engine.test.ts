@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 import {buildModel,currentCases,predict,type FeedbackRow} from '../lib/feedback-engine';
-import {seed} from '../lib/seed';
+import {seed} from './legacy-support/seed';
 const text='Swedish acquisition bridge financing in SEK and EUR with floating-rate debt';
 function label(i:number,useful=true):FeedbackRow{return {id:String(i),source_id:'source-'+i,decision:useful?'useful':'not_useful',reason:useful?'approved':'routine',score:useful?5:null,note:'',created_at:new Date(2026,0,i+1).toISOString(),source_snapshot:{headline:useful?text:'Form 8.3 holdings in company and own shares',excerpt:'Issuer disclosure',url:'https://news.cision.com/issuer/r/story-'+i,published_at:new Date(2026,0,i+1).toISOString()}};}
 test('learning is neutral on cold start, changes with comparable labels and does not invent exposures',()=>{
@@ -18,6 +18,7 @@ test('latest corrections replace labels, exclusions remove cases, and repeated d
  assert.equal(currentCases([label(0),corrected]).length,1);assert.equal(currentCases([label(0),corrected])[0].useful,false);
  assert.equal(currentCases([label(0),{...corrected,id:'excluded',created_at:'2028-01-01T00:00:00Z',decision:'exclude',score:null,reason:'retracted'}]).length,0);
  assert.equal(currentCases([{...label(0),decision:'exclude',score:null,reason:'stale'}]).length,0);
+ assert.equal(currentCases([{...label(0),decision:'not_useful',score:null,reason:'not_ma'}]).length,0);
 });
 test('versions are deterministic and evaluation holds out groups without label leakage',()=>{
  const rows=Array.from({length:12},(_,i)=>label(i,i%2===0));const model=buildModel(rows);
@@ -46,9 +47,10 @@ test('feedback SQL is atomic, append-only, reviewer-only and safely invalidates 
   else await db.query('select public.review_source_feedback($1,null,null,true,$2)', ['case-'+i,'routine']);
  }
  const rows=(await db.query<FeedbackRow>('select * from public.latest_review_feedback')).rows.map(r=>({...r,created_at:new Date(r.created_at).toISOString()}));
- const model=buildModel(rows);assert.equal(model.evaluation.eligible,true);
+ // This regression exercises the archived v2 SQL contract; canonical v3 is covered separately.
+ const model={...buildModel(rows),algorithm:'ficc-cases-v2'};assert.equal(model.evaluation.eligible,true);
  await assert.rejects(db.query('select public.save_learning_model($1,$2)',['f'.repeat(64),'{}']));
- const cold=buildModel([]);await db.query('select public.save_learning_model($1,$2)',[cold.id,JSON.stringify(cold)]);await assert.rejects(db.query('select public.set_learning_mode($1,true)',[cold.id]));
+ const cold={...buildModel([]),algorithm:'ficc-cases-v2'};await db.query('select public.save_learning_model($1,$2)',[cold.id,JSON.stringify(cold)]);await assert.rejects(db.query('select public.set_learning_mode($1,true)',[cold.id]));
  await db.query('select public.save_learning_model($1,$2)',[model.id,JSON.stringify(model)]);await db.query('select public.set_learning_mode($1,true)',[model.id]);
  assert.equal((await db.query<{use_learned_ranking:boolean}>('select * from public.learning_settings')).rows[0].use_learned_ranking,true);
  await db.query('select public.record_learning_feedback($1,$2,$3,null,$4)',['case-0','exclude','retracted','Withdraw this feedback example from learning']);
@@ -62,7 +64,7 @@ test('feedback SQL is atomic, append-only, reviewer-only and safely invalidates 
 });
 
 test('FICC assessment uses confirmed funding, settlement and desired proceeds, not country or assumptions',async()=>{
- const {assessFicc}=await import('../lib/ficc-advisory');
+ const {assessFicc}=await import('./legacy-support/ficc-advisory');
  const fact=(label:string,value:string)=>({label,value,kind:'Fact' as const});
  const uncertain=assessFicc({...seed[0],evidence:[{label:'Consideration currency',value:'SEK',kind:'Inference'},fact('Buyer reporting currency','EUR')]});assert.equal(uncertain.buyerFx,'Unclear');assert.equal(uncertain.twoSided,false);
  const d={...seed[0],evidence:[fact('Consideration type','CASH'),fact('Consideration currency','SEK'),fact('Buyer funding currency','EUR'),fact('Seller desired proceeds currency','EUR'),fact('Debt rate type','Floating')]};

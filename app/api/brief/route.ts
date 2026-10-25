@@ -1,4 +1,4 @@
-import { readSnapshot } from '@/lib/read-model';
-import { sections, inWindow } from '@/lib/model';
+import {readCorporateSnapshot} from '@/lib/corporate-read';
+import {eventSummary} from '@/lib/corporate-events';
 export const dynamic='force-dynamic';
-export async function GET(req:Request){const h=Number(new URL(req.url).searchParams.get('hours')||24);if(!Number.isFinite(h)||h<1||h>168)return Response.json({error:'Hours must be 1–168'},{status:400});const snapshot=await readSnapshot();const all=snapshot.deals;const s=sections(all,h);return Response.json({generatedAt:new Date().toISOString(),hours:h,disclaimer:snapshot.mode==='pilot'?(snapshot.stage===2?'Reviewed source records. Exposure hypotheses require treasury confirmation.':'Read-only pilot validation. Live ingestion and notifications disabled.'):'Synthetic demonstration. No live news monitoring or verified trading recommendation.',sections:s,table:all.map(d=>({...d,status:inWindow(d.source.timestamp,h)?d.status:'No Change'}))});}
+export async function GET(){const s=await readCorporateSnapshot();return Response.json({ontologyVersion:s.ontologyVersion,generatedAt:new Date().toISOString(),events:s.models.map(m=>({modelId:m.model_id,...eventSummary(m.graph)})),notice:'Evidence confidence, completion probability and commercial FICC score are separate measures.'});}

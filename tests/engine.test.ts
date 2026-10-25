@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { inWindow, sections, parseEvent, parseDeal, ranked } from '../lib/model';
-import { seed } from '../lib/seed';
+import { inWindow, sections, parseEvent, parseDeal, ranked } from './legacy-support/model';
+import { seed } from './legacy-support/seed';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,7 +12,7 @@ test('input rejects future timestamps and unsafe source schemes',()=>{assert.thr
 test('new real transactions require Nordic connection and explicit evidence',()=>{assert.throws(()=>parseDeal({...seed[0],country:'France'}));assert.throws(()=>parseDeal({...seed[0],evidence:[]}));assert.throws(()=>parseDeal(seed[0]));const valid=parseDeal({...seed[0],source:{headline:'Supplied announcement',url:'https://example.com/release',timestamp:new Date().toISOString()}});assert.equal(valid.synthetic,false);assert.equal(valid.status,'New');});
 test('event journal deduplicates, preserves stale history and protects closed deals',async()=>{
  const dir=mkdtempSync(join(tmpdir(),'ficc-test-'));process.env.DATA_DIR=dir;
- const db=await import('../lib/store');
+ const db=await import('./legacy-support/store');
  const a=db.addEvent(parseEvent(event));assert.equal(a.event?.material,true);
  assert.equal(db.addEvent(parseEvent(event)).duplicate,true);
  assert.equal(db.addEvent(parseEvent({...event,headline:'Older release',timestamp:'2020-01-01'})).event?.material,false);
