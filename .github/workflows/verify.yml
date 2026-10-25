@@ -2,7 +2,7 @@ name: Verify pilot and demo
 on:
   pull_request:
   push:
-    branches: [main, production-pilot-stage-1, production-pilot-stage-2, ficc-feedback-engine, fix-review-persistence, guided-review, corporate-event-model, easier-manual-review, mobile-review-timestamps]
+    branches: [main, production-pilot-stage-1, production-pilot-stage-2, ficc-feedback-engine, fix-review-persistence, guided-review, corporate-event-model, easier-manual-review, mobile-review-timestamps, evidence-extraction]
 permissions:
   contents: read
 jobs:
