@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
+import ExtractionEvaluationPanel from './extraction-evaluation-panel';
 import LearningPanel,{type LearningSummary} from './learning-panel';
 import {sourceGroups} from '@/lib/source-groups';
 import ReviewEditor from './review-editor';
@@ -27,5 +28,6 @@ export default function PilotPanel({models,onChange}:{models:CorporateModelRow[]
  {!state.items.some(i=>i.state==='pending')&&<p>No pending candidates. Scan the source to check for recent announcements.</p>}<h3>Source run history</h3>{state.runs.map(run=><p key={run.id}>{new Date(run.started_at).toLocaleString()} · {run.outcome} · {run.fetched} candidates<br/>{run.detail}</p>)}</div>
  <div><h3>Your notification delivery history</h3>{state.deliveries.map(d=><p key={d.id}>{d.status} · attempt {d.attempts}{d.last_error&&<> · {d.last_error}</>}</p>)}{!state.deliveries.length&&<p>No delivery records yet. Subscribe before approving a material announcement.</p>}
  <button className="button secondary" disabled={busy} onClick={async()=>{setBusy(true);try{const r=await fetch('/api/push',{method:'DELETE'});if(!r.ok)throw Error('Could not disable alerts');if('serviceWorker'in navigator){const reg=await navigator.serviceWorker.ready;await (await reg.pushManager.getSubscription())?.unsubscribe();}await saved('Your server subscriptions are disabled. An already-dispatched notification may still arrive.');}catch(e){setMessage((e as Error).message);}finally{setBusy(false);}}}>Disable my alerts</button><button className="button secondary" disabled={busy} onClick={()=>load().catch(e=>setMessage(e.message))}>Refresh status</button></div></div>
+ {state.canReview&&<ExtractionEvaluationPanel onReview={setEditing}/>}
  {editing&&<ReviewEditor key={editing} sourceId={editing} models={models} onClose={()=>setEditing(null)} onSaved={saved} onNext={async message=>{const remaining=state.items.filter(i=>i.state==='pending'&&i.id!==editing);await saved(message);setEditing(remaining[0]?.id||null);}}/>}{dismiss&&<DismissEditor item={dismiss} onClose={()=>setDismiss(null)} onSaved={saved}/>}</section>;
 }

@@ -2,7 +2,7 @@ name: Verify pilot and demo
 on:
   pull_request:
   push:
-    branches: [main, production-pilot-stage-1, production-pilot-stage-2, ficc-feedback-engine, fix-review-persistence, guided-review, corporate-event-model, easier-manual-review, mobile-review-timestamps]
+    branches: [main, production-pilot-stage-1, production-pilot-stage-2, ficc-feedback-engine, fix-review-persistence, guided-review, corporate-event-model, easier-manual-review, mobile-review-timestamps, evidence-extraction]
 permissions:
   contents: read
 jobs:
@@ -15,6 +15,10 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s python -p 'test_*.py'
       - run: npm ci --no-audit --no-fund
       - run: npm test
       - run: npm run build

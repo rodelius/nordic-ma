@@ -8,3 +8,6 @@ playwright-report/
 test-results/
 
 browser-tests.log
+
+__pycache__/
+*.pyc
