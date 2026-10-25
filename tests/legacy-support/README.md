@@ -1,0 +1,1 @@
+These modules are fixtures for historical migration and behavior regression tests. They are not imported by the application. The active model is lib/corporate-events.ts and lib/corporate-event-schema.json; legacy transaction writes and free-text classifications are retired.

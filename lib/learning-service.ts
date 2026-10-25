@@ -7,7 +7,7 @@ export async function learningState(client:SupabaseClient){
   client.from('learning_settings').select('*').eq('id',1).single(),
   client.from('learning_models').select('id,created_at,artifact').order('created_at',{ascending:false}).limit(20),
  ]);
- if([feedback,settings,versions].some(r=>r.error))throw Error('Apply migration 004 to enable the feedback engine');
+ if([feedback,settings,versions].some(r=>r.error))throw Error('Apply migration 007 and the preceding feedback migrations');
  const rows=(feedback.data||[]) as FeedbackRow[],working=buildModel(rows);
  let active:Model|null=null;
  if(settings.data?.use_learned_ranking&&settings.data.active_model){
@@ -22,6 +22,6 @@ export function learningSummary(state:Awaited<ReturnType<typeof learningState>>)
  enabled:true,mode:state.active?'active':'shadow',algorithm:state.working.algorithm,feedbackCount:state.rows.length,trainingCases:state.working.examples.length,
  workingVersion:state.working.id,activeVersion:state.active?.id||null,evaluation:state.working.evaluation,
  versions:state.versions.map(v=>({id:v.id,createdAt:v.created_at,evaluation:v.artifact.evaluation})),
- recent:state.rows.slice(0,15).map(r=>({id:r.id,sourceId:r.source_id,headline:r.source_snapshot.headline,decision:r.decision,reason:r.reason,score:r.score,note:r.note,at:r.created_at,hasAnalysis:!!r.analysis_snapshot||!!r.source_snapshot.deal_id})),
+ recent:state.rows.slice(0,15).map(r=>({id:r.id,sourceId:r.source_id,headline:r.source_snapshot.headline,decision:r.decision,reason:r.reason,score:r.score,note:r.note,at:r.created_at,hasAnalysis:!!r.analysis_snapshot||!!r.source_snapshot.model_id||!!r.source_snapshot.deal_id})),
 };}
 export function suggest(state:Awaited<ReturnType<typeof learningState>>,text:string){return {version:(state.active||state.working).id,...predict(text,(state.active||state.working).examples),shadow:state.active?predict(text,state.working.examples):null};}

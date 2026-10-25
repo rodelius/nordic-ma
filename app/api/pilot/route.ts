@@ -3,7 +3,6 @@ import { DISMISS_REASONS } from '@/lib/feedback-labels';
 import { requirePilotMember,requirePilotReviewer } from '@/lib/supabase/server';
 import { stage2Enabled,livePushReady,monitoringEnabled } from '@/lib/live-config';
 import { pilotConfig } from '@/lib/pilot-config';
-import { parseDeal } from '@/lib/model';
 import { scanSource,deliverNotifications } from '@/lib/live-jobs';
 export const dynamic='force-dynamic';export const maxDuration=60;
 export async function GET(){
@@ -30,24 +29,8 @@ export async function POST(req:Request){
  if(input.action==='test'){const {data,error}=await client.rpc('queue_test_alert');if(error)throw Error('Could not queue test alert');return Response.json(data);}
  if(input.action==='scan')return Response.json(await scanSource(true));
  if(input.action==='deliver')return Response.json(await deliverNotifications());
- if(!['approve','dismiss'].includes(input.action)||typeof input.sourceId!=='string')throw Error('Invalid review action');
- const {data:item,error:lookup}=await client.from('source_items').select('*').eq('id',input.sourceId).single();if(lookup||!item)throw Error('Unknown source item');
- let deal=null;
- if(input.action==='approve'){
-  deal=parseDeal(input.deal);
-  if(!deal.evidence.some(e=>e.label.trim().toLowerCase()==='nordic connection'&&e.kind==='Fact'&&e.value.trim().length>=8&&!/^(unknown|unconfirmed|not verified|unclear)$/i.test(e.value.trim())))throw Error('Document a source-supported Nordic connection as a Fact evidence entry labelled Nordic connection');
-  deal.source={headline:item.headline,url:item.url,timestamp:item.published_at};
- }
- if(input.existingId!==undefined&&input.existingId!==null&&typeof input.existingId!=='string')throw Error('Invalid transaction selection');
- const params:Record<string,unknown>={p_source:item.id,p_deal:deal,p_existing:input.existingId||null,p_dismiss:input.action==='dismiss'};
- let rpc='review_source';
- if(learningEnabled()){
-  if(input.action==='dismiss'&&(!input.reason||!Object.hasOwn(DISMISS_REASONS,input.reason)))throw Error('Choose a dismissal reason');
-  if(input.note!==undefined&&(typeof input.note!=='string'||input.note.length>1000))throw Error('Feedback note is too long');
-  rpc='review_source_feedback';params.p_reason=input.action==='dismiss'?input.reason:null;params.p_note=input.note||'';const {data:settings,error:settingsError}=await client.from('learning_settings').select('active_model,use_learned_ranking').eq('id',1).single();if(settingsError)throw Error('Apply migration 004 before recording learning feedback');params.p_model=settings?.use_learned_ranking?settings.active_model:null;
- }
- const {data,error}=await client.rpc(rpc,params);
- if(error)throw Error(error.message);
- return Response.json(data);
+ if(input.action!=='dismiss'||typeof input.sourceId!=='string'||!Object.hasOwn(DISMISS_REASONS,input.reason))throw Error('Choose a source and dismissal reason');
+ if(input.note!==undefined&&(typeof input.note!=='string'||input.note.length>1000))throw Error('Feedback note too long');
+ const {data,error}=await client.rpc('dismiss_corporate_source',{p_source:input.sourceId,p_reason:input.reason,p_note:input.note||'',p_learning:learningEnabled()});if(error)throw Error(error.message);return Response.json(data);
  }catch(e){return Response.json({error:e instanceof Error?e.message:'Pilot action failed'},{status:400});}
 }

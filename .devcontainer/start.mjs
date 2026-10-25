@@ -8,13 +8,13 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const state = join(tmpdir(), `nordic-ficc-dev-${process.getuid?.() ?? 'user'}`);
 mkdirSync(state, { recursive: true, mode: 0o700 });
 const log = join(state, 'server.log');
-const endpoint = 'http://127.0.0.1:3000/api/deals';
+const endpoint = 'http://127.0.0.1:3000/api/corporate-events';
 async function ready() {
   try {
     const response = await fetch(endpoint, { signal: AbortSignal.timeout(2000) });
     if (!response.ok) return false;
     const payload = await response.json();
-    return Array.isArray(payload.deals) && ['demo', 'mixed'].includes(payload.mode);
+    return Array.isArray(payload.models) && ['demo', 'mixed'].includes(payload.mode);
   } catch { return false; }
 }
 if (await ready()) {

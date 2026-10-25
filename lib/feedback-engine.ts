@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-export const ENGINE_VERSION='ficc-cases-v2';
-export type FeedbackRow={id:string;source_id:string;decision:'useful'|'not_useful'|'exclude';reason:string;score:number|null;note:string;created_at:string;analysis_snapshot?:Record<string,unknown>|null;changed_fields?:string[];source_snapshot:{headline:string;excerpt:string;url:string;published_at:string;deal_id?:string|null}};
+export const ENGINE_VERSION='ficc-cases-v3';
+export type FeedbackRow={id:string;source_id:string;decision:'useful'|'not_useful'|'exclude';reason:string;score:number|null;note:string;created_at:string;analysis_snapshot?:Record<string,unknown>|null;changed_fields?:string[];source_snapshot:{headline:string;excerpt:string;url:string;published_at:string;deal_id?:string|null;programme_id?:string|null;model_id?:string|null;ontology_version?:string}};
 export type LearningCase={id:string;sourceId:string;group:string;at:string;publishedAt:string;headline:string;features:string[];useful:boolean;score:number|null;reason:string;correctionFields?:string[]};
 export type Prediction={priority:number;suggestedFiccScore:number|null;support:number;status:'cold'|'limited'|'supported';explanation:string;neighbors:{feedbackId:string;headline:string;reason:string;useful:boolean;score:number|null;similarity:number;correctionFields?:string[]}[]};
 const signals:Record<string,RegExp>={
@@ -26,6 +26,11 @@ const signals:Record<string,RegExp>={
  minority:/minority stake|minority interest|partial stake/i,
  shares_issued:/share capital increase|issuance of.*shares|new shares.*acquisition|share consideration/i,
  holdings:/holdings? in company|form 8\.3|dealing disclosure|major shareholding|voting rights/i,
+ ipo:/\bIPO\b|initial public offering|intention to float|bookbuild/i,
+ bond:/bond issu|bond pricing|senior notes|debt tender|exchange offer/i,
+ project_finance:/project financ|financial close|construction financ/i,
+ restructuring:/restructur|debt.for.equity|insolven|liquidat|standstill/i,
+ capital_return:/special dividend|capital return|rights issue|equity offering|share repurchase/i,
  reporting:/annual report|quarterly report|interim report|financial results|year.end report|earnings release|bokslut|delårsrapport/i,
  own_shares:/own shares|share buyback|treasury shares/i,
 };
@@ -46,7 +51,7 @@ function predictFeatures(input:string[],cases:LearningCase[]):Prediction{
 function canonical(url:string){try{const u=new URL(url);return u.hostname+u.pathname.replace(/^\/[a-z]{2}\//,'/').toLowerCase();}catch{return url;}}
 export function currentCases(rows:FeedbackRow[]):LearningCase[]{
  const latest=new Map<string,FeedbackRow>();for(const row of [...rows].sort((a,b)=>b.created_at.localeCompare(a.created_at)||b.id.localeCompare(a.id)))if(!latest.has(row.source_id))latest.set(row.source_id,row);
- return [...latest.values()].filter(r=>r.decision!=='exclude'&&!['duplicate','stale','other'].includes(r.reason)).map(r=>({id:r.id,sourceId:r.source_id,group:r.source_snapshot.deal_id||canonical(r.source_snapshot.url),at:r.created_at,publishedAt:r.source_snapshot.published_at,headline:r.source_snapshot.headline,features:features(r.source_snapshot.headline+'\n'+r.source_snapshot.excerpt),useful:r.decision==='useful',score:r.score,reason:r.reason,correctionFields:(r.changed_fields||[]).filter(f=>['score','pair','buyerFx','sellerFx','classification','angle','rates','evidence'].includes(f))}));
+ return [...latest.values()].filter(r=>r.decision!=='exclude'&&!['duplicate','stale','other','not_ma'].includes(r.reason)).map(r=>({id:r.id,sourceId:r.source_id,group:r.source_snapshot.programme_id||r.source_snapshot.model_id||r.source_snapshot.deal_id||canonical(r.source_snapshot.url),at:r.created_at,publishedAt:r.source_snapshot.published_at,headline:r.source_snapshot.headline,features:features(r.source_snapshot.headline+'\n'+r.source_snapshot.excerpt),useful:r.decision==='useful',score:r.score,reason:r.reason,correctionFields:(r.changed_fields||[]).filter(f=>['score','pair','buyerFx','sellerFx','classification','angle','rates','evidence','corporateEvent','FICC_SCORE'].includes(f)||/^(Opportunity|RiskExposure|FundingInstrument|EconomicLeg|Claim)\./.test(f))}));
 }
 export type Model={algorithm:typeof ENGINE_VERSION;id:string;examples:LearningCase[];feedbackCount:number;evaluation:{eligible:boolean;reason:string;trainingCount:number;holdoutCount:number;scoredHoldouts:number;trainingIds:string[];holdoutIds:string[];precisionAt3:number|null;baselinePrecisionAt3:number|null;split:'newest-known-groups-held-out'}};
 export function buildModel(rows:FeedbackRow[]):Model{

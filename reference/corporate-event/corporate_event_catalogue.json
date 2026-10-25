@@ -1,0 +1,4192 @@
+{
+  "model_version": "1.0.0",
+  "as_of": "2026-10-25",
+  "scope": "Reference ontology and starter event-template catalogue; not jurisdiction-specific legal advice or a production-complete workflow engine.",
+  "ordering_semantics": "Milestone display_order is illustrative. Runtime dependencies must be instantiated with applicable legal, contractual and route-specific gates. No sequential dependency is implied by display order.",
+  "lifecycle_phases": [
+    "ORIGINATION",
+    "STRATEGIC_REVIEW",
+    "PREPARATION",
+    "MARKETING_OR_ENGAGEMENT",
+    "EVALUATION",
+    "NEGOTIATION_AND_SELECTION",
+    "COMMITMENT",
+    "CONDITIONS_AND_EXECUTION",
+    "COMPLETION",
+    "POST_COMPLETION"
+  ],
+  "dispositions": [
+    "ACTIVE",
+    "ON_HOLD",
+    "WITHDRAWN",
+    "TERMINATED",
+    "LAPSED",
+    "SUPERSEDED",
+    "COMPLETED"
+  ],
+  "outcomes": [
+    "UNKNOWN",
+    "SUCCESS",
+    "PARTIAL_SUCCESS",
+    "FAILURE",
+    "NO_ACTION"
+  ],
+  "milestone_statuses": [
+    "UNKNOWN",
+    "PLANNED",
+    "IN_PROGRESS",
+    "ACHIEVED",
+    "FAILED",
+    "WAIVED",
+    "NOT_APPLICABLE",
+    "DISPUTED",
+    "REVOKED"
+  ],
+  "assertion_types": [
+    "OFFICIAL_FACT",
+    "REPORTED_FACT",
+    "RUMOUR",
+    "ANALYST_INFERENCE",
+    "MODEL_ESTIMATE"
+  ],
+  "workstreams": {
+    "COMMERCIAL": [
+      "NOT_STARTED",
+      "ACTIVE",
+      "TERMS_PROPOSED",
+      "TERMS_AGREED",
+      "COMPLETE"
+    ],
+    "DILIGENCE": [
+      "NOT_STARTED",
+      "SCOPING",
+      "ACCESS_GRANTED",
+      "IN_PROGRESS",
+      "ISSUES_IDENTIFIED",
+      "REMEDIATION",
+      "SUBSTANTIALLY_COMPLETE",
+      "COMPLETE"
+    ],
+    "DOCUMENTATION": [
+      "NOT_STARTED",
+      "DRAFTING",
+      "NEGOTIATING",
+      "AGREED_FORM",
+      "EXECUTED",
+      "EFFECTIVE"
+    ],
+    "FINANCING": [
+      "NOT_ASSESSED",
+      "CAPACITY_ASSESSED",
+      "MARKET_SOUNDING",
+      "INDICATIVE_TERMS",
+      "CREDIT_APPROVED",
+      "COMMITTED",
+      "DOCUMENTED",
+      "AVAILABLE",
+      "PARTIALLY_DRAWN",
+      "DRAWN",
+      "REFINANCED",
+      "REPAID"
+    ],
+    "REGULATORY": [
+      "APPLICABILITY_UNASSESSED",
+      "NOT_REQUIRED",
+      "PRE_NOTIFICATION",
+      "FILED",
+      "IN_REVIEW",
+      "IN_DEPTH_REVIEW",
+      "REMEDIES_NEGOTIATED",
+      "CONDITIONAL_CLEARANCE",
+      "CLEARED",
+      "PROHIBITED",
+      "WITHDRAWN"
+    ],
+    "SHAREHOLDER": [
+      "NOT_ASSESSED",
+      "NOT_REQUIRED",
+      "DOCUMENTATION",
+      "MEETING_OR_ELECTION_SCHEDULED",
+      "VOTING_OR_ELECTION_OPEN",
+      "APPROVED",
+      "REJECTED"
+    ],
+    "SEPARATION": [
+      "NOT_REQUIRED",
+      "SCOPING",
+      "DESIGN",
+      "IMPLEMENTATION",
+      "DAY_ONE_READY",
+      "LEGALLY_SEPARATED",
+      "TSA_ACTIVE",
+      "TSA_EXITED"
+    ],
+    "HEDGING": [
+      "NOT_ASSESSED",
+      "EXPOSURE_IDENTIFIED",
+      "DATA_VALIDATED",
+      "STRATEGY_REVIEW",
+      "INDICATIVE_QUOTE",
+      "CREDIT_AND_DOCUMENTATION_READY",
+      "EXECUTABLE_QUOTE",
+      "EXECUTED",
+      "MONITORED",
+      "RESIZED",
+      "ROLLED",
+      "SETTLED",
+      "TERMINATED"
+    ],
+    "CLOSING": [
+      "NOT_READY",
+      "CHECKLIST_OPEN",
+      "FUNDS_FLOW_AGREED",
+      "CONDITIONS_CONFIRMED",
+      "READY",
+      "FUNDED",
+      "SETTLED",
+      "OWNERSHIP_EFFECTIVE",
+      "RECONCILED"
+    ]
+  },
+  "entities": {
+    "EventProgramme": "programme_id PK; title; sponsor_entity_id FK; objective; status; created_at; version",
+    "CorporateEvent": "event_id PK; programme_id FK; event_type_id FK; title; lifecycle_phase; disposition; outcome; legal_structure; jurisdictions[]; rulebook_version; expected_close_start; expected_close_end; actual_completion_at; owner_entity_id FK; confidentiality; model_version",
+    "EventRelationship": "relationship_id PK; from_event_id FK; to_event_id FK; relationship_type; exclusivity_group_id; effective_from; effective_to",
+    "Entity": "entity_id PK; legal_name; LEI; registration_number; domicile; reporting_currency; entity_type; parent_entity_id FK",
+    "EventParty": "event_party_id PK; event_id FK; entity_id FK; role; consortium_id; ownership_before; ownership_after; control_rights; valid_from; valid_to",
+    "TransactionPerimeter": "perimeter_id PK; event_id FK; included_entity_ids[]; excluded_entity_ids[]; assets; geography; ownership_percent; perimeter_version",
+    "Pursuit": "pursuit_id PK; event_id FK; bidder_entity_id FK; round; status; bid_id FK; exclusivity_start; exclusivity_end",
+    "Bid": "bid_id PK; pursuit_id FK; submitted_at; binding_status; price_currency; equity_value; enterprise_value; assumed_debt; cash_component; stock_component; conditions; expires_at; source_claim_id FK",
+    "WorkstreamInstance": "workstream_id PK; event_id FK; pursuit_id FK optional; workstream_type; status; owner; blocker; next_action; updated_at",
+    "MilestoneDefinition": "milestone_definition_id PK; event_type_id FK; label; display_order; workstream_type; optionality_rule; evidence_requirement; rulebook_overlay",
+    "MilestoneOccurrence": "milestone_occurrence_id PK; event_id FK; pursuit_id FK optional; milestone_definition_id FK; status; occurred_at; date_precision; observed_at; source_claim_ids[]; supersedes_occurrence_id FK",
+    "Dependency": "dependency_id PK; event_id FK; predecessor_id; successor_id; dependency_type; logic_group; required_status; applicability; waiver_rule; rule_source; version",
+    "Condition": "condition_id PK; event_id FK; condition_type; authority_or_counterparty; jurisdiction; state; deadline; waiver_permitted; waiver_holder; approval_expiry; evidence_claim_id FK",
+    "ApprovalCase": "approval_case_id PK; condition_id FK; filing_at; completeness_at; stage; decision_at; decision; remedy; appeal_state; source_claim_ids[]",
+    "FundingInstrument": "funding_id PK; event_id FK; borrower_id FK; instrument_type; currency; committed_amount; drawn_amount; availability_end; maturity; rate_index; margin; fixed_rate; amortisation; priority; guarantee; security; conditions; certainty_status",
+    "EconomicLeg": "leg_id PK; event_id FK; funding_id FK optional; payer_id FK; payee_id FK; flow_type; asset_or_instrument; currency; amount_min; amount_base; amount_max; measurement_basis; gross_net_basis; expected_settlement_start; expected_settlement_end; contingency; restriction; source_claim_id FK; internal_group_flag; parent_leg_id FK; mutually_exclusive_group_id",
+    "RiskExposure": "exposure_id PK; event_id FK; leg_ids[]; exposed_entity_id FK; risk_type; risk_currency; functional_currency; reporting_currency; direction; notional; delta_equivalent; start_at; end_at; rate_tenor; commodity_unit; underlying_price_index; probability_model_id; estimation_status",
+    "Hedge": "hedge_id PK; exposure_ids[]; counterparty_id FK; product; currencies[]; notional; strike_or_fixed_rate; trade_at; value_at; maturity; close_condition; contingent_definition; expiry; extension_terms; unwind_terms; credit_status; documentation_status; accounting_designation",
+    "SourceDocument": "source_id PK; url_or_internal_ref; issuer; source_type; publication_at; retrieved_at; document_hash; access_scope; language",
+    "Claim": "claim_id PK; source_id FK; subject_id; predicate; value; unit; currency; effective_at; observed_at; evidence_excerpt; assertion_type; evidence_confidence; review_state; supersedes_claim_id FK",
+    "StateTransition": "transition_id PK; event_id FK; dimension; prior_value; new_value; effective_at; recorded_at; actor; reason; supporting_claim_ids[]; supersedes_transition_id FK",
+    "Forecast": "forecast_id PK; event_id FK; as_of; horizon; target; estimate; low; high; model_version; assumptions; approval_state",
+    "Feedback": "feedback_id PK; target_type; target_id; proposed_value; corrected_value; reason; annotator_role; created_at; adjudication; ontology_version",
+    "Opportunity": "opportunity_id PK; event_id FK; client_entity_id FK; exposure_id FK; product_family; evidence_status; urgency; potential_notional; commercial_owner; next_action; decision_deadline; status"
+  },
+  "event_relationship_types": [
+    "PART_OF",
+    "FINANCES",
+    "REFINANCES",
+    "REQUIRES",
+    "ALTERNATIVE_TO",
+    "IMPLEMENTS",
+    "SEPARATES",
+    "RESULTS_IN",
+    "SUPERSEDES"
+  ],
+  "event_templates": [
+    {
+      "event_type_id": "ACQ_PRIVATE",
+      "family": "Ownership",
+      "name": "Private company acquisition",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_01",
+          "display_order": 1,
+          "label": "Strategic rationale",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_02",
+          "display_order": 2,
+          "label": "Target identified",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_03",
+          "display_order": 3,
+          "label": "Initial approach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_04",
+          "display_order": 4,
+          "label": "NDA executed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_05",
+          "display_order": 5,
+          "label": "Information memorandum received",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_06",
+          "display_order": 6,
+          "label": "Indicative offer submitted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_07",
+          "display_order": 7,
+          "label": "Management presentation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_08",
+          "display_order": 8,
+          "label": "Data room opened",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_09",
+          "display_order": 9,
+          "label": "Due diligence underway",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_10",
+          "display_order": 10,
+          "label": "Quality of earnings reviewed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_11",
+          "display_order": 11,
+          "label": "SPA negotiated",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_12",
+          "display_order": 12,
+          "label": "Final binding bid submitted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_13",
+          "display_order": 13,
+          "label": "Preferred bidder selected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_14",
+          "display_order": 14,
+          "label": "Exclusivity granted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_15",
+          "display_order": 15,
+          "label": "Investment approval obtained",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_16",
+          "display_order": 16,
+          "label": "Financing committed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_17",
+          "display_order": 17,
+          "label": "SPA signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_18",
+          "display_order": 18,
+          "label": "Conditions precedent managed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_19",
+          "display_order": 19,
+          "label": "Closing readiness confirmed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_20",
+          "display_order": 20,
+          "label": "Consideration settled",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_21",
+          "display_order": 21,
+          "label": "Ownership transferred",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ACQ_PRIVATE_22",
+          "display_order": 22,
+          "label": "Completion accounts or earn-out administered",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "SPA signing, price adjustment and currency of consideration determine exposure; buyer purchase currency and seller proceeds currency are separate legs."
+    },
+    {
+      "event_type_id": "SALE_AUCTION",
+      "family": "Ownership",
+      "name": "Sell-side competitive auction",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "SALE_AUCTION_01",
+          "display_order": 1,
+          "label": "Exit review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_02",
+          "display_order": 2,
+          "label": "Advisers appointed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_03",
+          "display_order": 3,
+          "label": "Vendor due diligence commissioned",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_04",
+          "display_order": 4,
+          "label": "Teaser prepared",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_05",
+          "display_order": 5,
+          "label": "Buyer longlist approved",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_06",
+          "display_order": 6,
+          "label": "Outreach launched",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_07",
+          "display_order": 7,
+          "label": "NDAs executed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_08",
+          "display_order": 8,
+          "label": "Information memoranda distributed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_09",
+          "display_order": 9,
+          "label": "Round-one bids received",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_10",
+          "display_order": 10,
+          "label": "Shortlist selected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_11",
+          "display_order": 11,
+          "label": "Management presentations",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_12",
+          "display_order": 12,
+          "label": "Confirmatory diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_13",
+          "display_order": 13,
+          "label": "SPA markup distributed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_14",
+          "display_order": 14,
+          "label": "Final bids received",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_15",
+          "display_order": 15,
+          "label": "Preferred bidder selected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_16",
+          "display_order": 16,
+          "label": "Exclusivity granted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_17",
+          "display_order": 17,
+          "label": "SPA signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_18",
+          "display_order": 18,
+          "label": "Approvals obtained",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_19",
+          "display_order": 19,
+          "label": "Closing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_AUCTION_20",
+          "display_order": 20,
+          "label": "Proceeds distributed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "One campaign has many bidder pursuits; do not treat every NDA or bid as progress by the eventual buyer."
+    },
+    {
+      "event_type_id": "TAKE_PRIVATE",
+      "family": "Ownership",
+      "name": "Take-private programme",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_01",
+          "display_order": 1,
+          "label": "Sponsor thesis",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_02",
+          "display_order": 2,
+          "label": "Consortium formed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_03",
+          "display_order": 3,
+          "label": "Target approach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_04",
+          "display_order": 4,
+          "label": "Confidential diligence if permitted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_05",
+          "display_order": 5,
+          "label": "Equity commitment arranged",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_06",
+          "display_order": 6,
+          "label": "Debt commitment arranged",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_07",
+          "display_order": 7,
+          "label": "Investment approval",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_08",
+          "display_order": 8,
+          "label": "Binding offer decision",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_09",
+          "display_order": 9,
+          "label": "Public offer or scheme launched",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_10",
+          "display_order": 10,
+          "label": "Board recommendation recorded",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_11",
+          "display_order": 11,
+          "label": "Shareholder and regulatory processes",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_12",
+          "display_order": 12,
+          "label": "Offer unconditional or scheme effective",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_13",
+          "display_order": 13,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_14",
+          "display_order": 14,
+          "label": "Control obtained",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_15",
+          "display_order": 15,
+          "label": "Residual minority process",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "TAKE_PRIVATE_16",
+          "display_order": 16,
+          "label": "Delisting",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Compose with public-offer or scheme route and optional LBO financing. Settlement, ownership percentage, squeeze-out and delisting are separate milestones."
+    },
+    {
+      "event_type_id": "PUBLIC_OFFER",
+      "family": "Ownership",
+      "name": "Public contractual takeover offer",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_01",
+          "display_order": 1,
+          "label": "Stake or approach disclosed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_02",
+          "display_order": 2,
+          "label": "Possible offer announced",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_03",
+          "display_order": 3,
+          "label": "Due diligence if permitted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_04",
+          "display_order": 4,
+          "label": "Funding certainty established",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_05",
+          "display_order": 5,
+          "label": "Firm offer announced",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_06",
+          "display_order": 6,
+          "label": "Offer document published",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_07",
+          "display_order": 7,
+          "label": "Acceptance period opened",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_08",
+          "display_order": 8,
+          "label": "Board response",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_09",
+          "display_order": 9,
+          "label": "Regulatory review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_10",
+          "display_order": 10,
+          "label": "Offer revised if applicable",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_11",
+          "display_order": 11,
+          "label": "Acceptance results announced",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_12",
+          "display_order": 12,
+          "label": "Conditions satisfied or lawfully waived",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_13",
+          "display_order": 13,
+          "label": "Offer unconditional",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_14",
+          "display_order": 14,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_15",
+          "display_order": 15,
+          "label": "Extended acceptance if applicable",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PUBLIC_OFFER_16",
+          "display_order": 16,
+          "label": "Minority acquisition if applicable",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Track voluntary versus mandatory and recommended versus hostile independently; never presume private-sale exclusivity or unrestricted diligence."
+    },
+    {
+      "event_type_id": "SCHEME",
+      "family": "Ownership",
+      "name": "Court-sanctioned scheme acquisition",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "SCHEME_01",
+          "display_order": 1,
+          "label": "Confidential negotiation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_02",
+          "display_order": 2,
+          "label": "Implementation agreement signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_03",
+          "display_order": 3,
+          "label": "Firm transaction announced",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_04",
+          "display_order": 4,
+          "label": "Scheme circular prepared",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_05",
+          "display_order": 5,
+          "label": "Meeting convening process",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_06",
+          "display_order": 6,
+          "label": "Shareholder meetings",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_07",
+          "display_order": 7,
+          "label": "Required votes obtained",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_08",
+          "display_order": 8,
+          "label": "Regulatory clearances",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_09",
+          "display_order": 9,
+          "label": "Court sanction",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_10",
+          "display_order": 10,
+          "label": "Order delivered or registered as required",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_11",
+          "display_order": 11,
+          "label": "Scheme effective",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_12",
+          "display_order": 12,
+          "label": "Cash and securities settled",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SCHEME_13",
+          "display_order": 13,
+          "label": "Listing cancelled",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Jurisdiction-specific route, not a standard Nordic takeover step. Court sanction and legal effectiveness must not be conflated."
+    },
+    {
+      "event_type_id": "LBO",
+      "family": "Financing",
+      "name": "Leveraged buyout financing overlay",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "LBO_01",
+          "display_order": 1,
+          "label": "Sponsor screening",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_02",
+          "display_order": 2,
+          "label": "LBO model",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_03",
+          "display_order": 3,
+          "label": "Debt capacity assessed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_04",
+          "display_order": 4,
+          "label": "Management incentive design",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_05",
+          "display_order": 5,
+          "label": "Lender sounding",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_06",
+          "display_order": 6,
+          "label": "Debt term sheets",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_07",
+          "display_order": 7,
+          "label": "Credit approvals",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_08",
+          "display_order": 8,
+          "label": "Equity commitments",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_09",
+          "display_order": 9,
+          "label": "Debt commitments",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_10",
+          "display_order": 10,
+          "label": "Intercreditor and security negotiation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_11",
+          "display_order": 11,
+          "label": "Financing documents signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_12",
+          "display_order": 12,
+          "label": "Syndication or flex managed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_13",
+          "display_order": 13,
+          "label": "Draw conditions satisfied",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_14",
+          "display_order": 14,
+          "label": "Acquisition funding drawn",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_15",
+          "display_order": 15,
+          "label": "Purchase funded",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_16",
+          "display_order": 16,
+          "label": "Bridge refinanced",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LBO_17",
+          "display_order": 17,
+          "label": "Post-close hedging implemented",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Attach to an acquisition rather than recording another independent purchase; distinguish committed, syndicated, drawn and refinanced debt."
+    },
+    {
+      "event_type_id": "MERGER",
+      "family": "Ownership",
+      "name": "Negotiated merger or business combination",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "MERGER_01",
+          "display_order": 1,
+          "label": "Strategic dialogue",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_02",
+          "display_order": 2,
+          "label": "NDA",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_03",
+          "display_order": 3,
+          "label": "Mutual valuation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_04",
+          "display_order": 4,
+          "label": "Exchange ratio negotiated",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_05",
+          "display_order": 5,
+          "label": "Mutual diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_06",
+          "display_order": 6,
+          "label": "Synergy assessment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_07",
+          "display_order": 7,
+          "label": "Governance and domicile agreed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_08",
+          "display_order": 8,
+          "label": "Merger agreement signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_09",
+          "display_order": 9,
+          "label": "Public announcement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_10",
+          "display_order": 10,
+          "label": "Shareholder documentation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_11",
+          "display_order": 11,
+          "label": "Financing and capital actions",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_12",
+          "display_order": 12,
+          "label": "Shareholder approvals",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_13",
+          "display_order": 13,
+          "label": "Regulatory approvals",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_14",
+          "display_order": 14,
+          "label": "Legal effectiveness",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_15",
+          "display_order": 15,
+          "label": "Share exchange",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MERGER_16",
+          "display_order": 16,
+          "label": "Operational integration",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Cash boot, exchange ratio, dividend adjustments and post-merger debt currency are separate economic terms."
+    },
+    {
+      "event_type_id": "MINORITY",
+      "family": "Ownership",
+      "name": "Minority or growth equity investment",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "MINORITY_01",
+          "display_order": 1,
+          "label": "Capital or partner review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_02",
+          "display_order": 2,
+          "label": "Investor outreach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_03",
+          "display_order": 3,
+          "label": "NDA",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_04",
+          "display_order": 4,
+          "label": "Indicative terms",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_05",
+          "display_order": 5,
+          "label": "Valuation and governance negotiation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_06",
+          "display_order": 6,
+          "label": "Diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_07",
+          "display_order": 7,
+          "label": "Investment approval",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_08",
+          "display_order": 8,
+          "label": "Subscription or share purchase agreement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_09",
+          "display_order": 9,
+          "label": "Consents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_10",
+          "display_order": 10,
+          "label": "Funding",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_11",
+          "display_order": 11,
+          "label": "Share issuance or transfer",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "MINORITY_12",
+          "display_order": 12,
+          "label": "Governance rights effective",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Primary issuance and secondary proceeds require separate cash legs; record vetoes and control rather than inferring control from percentage alone."
+    },
+    {
+      "event_type_id": "JV",
+      "family": "Ownership",
+      "name": "Joint venture formation or expansion",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "JV_01",
+          "display_order": 1,
+          "label": "Partner selection",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_02",
+          "display_order": 2,
+          "label": "NDA",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_03",
+          "display_order": 3,
+          "label": "Feasibility assessment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_04",
+          "display_order": 4,
+          "label": "Heads of terms",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_05",
+          "display_order": 5,
+          "label": "Asset and business valuation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_06",
+          "display_order": 6,
+          "label": "Diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_07",
+          "display_order": 7,
+          "label": "Contribution and governance negotiation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_08",
+          "display_order": 8,
+          "label": "JV agreement signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_09",
+          "display_order": 9,
+          "label": "Regulatory and third-party consents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_10",
+          "display_order": 10,
+          "label": "Capital contributions",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_11",
+          "display_order": 11,
+          "label": "Assets transferred",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_12",
+          "display_order": 12,
+          "label": "JV operational",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "JV_13",
+          "display_order": 13,
+          "label": "Funding and distributions monitored",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Separate cash contributions, contributed assets, shareholder loans, guarantees and future capex commitments."
+    },
+    {
+      "event_type_id": "DIVESTITURE",
+      "family": "Separation",
+      "name": "Business divestiture / divestment",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "DIVESTITURE_01",
+          "display_order": 1,
+          "label": "Portfolio review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_02",
+          "display_order": 2,
+          "label": "Perimeter selected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_03",
+          "display_order": 3,
+          "label": "Disposal method selected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_04",
+          "display_order": 4,
+          "label": "Separation diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_05",
+          "display_order": 5,
+          "label": "Tax and structuring",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_06",
+          "display_order": 6,
+          "label": "Buyer process launched",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_07",
+          "display_order": 7,
+          "label": "Bids evaluated",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_08",
+          "display_order": 8,
+          "label": "Separation plan",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_09",
+          "display_order": 9,
+          "label": "SPA signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_10",
+          "display_order": 10,
+          "label": "Carve-out and consents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_11",
+          "display_order": 11,
+          "label": "Closing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_12",
+          "display_order": 12,
+          "label": "Proceeds repatriated",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_13",
+          "display_order": 13,
+          "label": "TSA exit",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVESTITURE_14",
+          "display_order": 14,
+          "label": "Residual liabilities settled",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Divestiture and divestment are aliases here; a sale, spin-off or closure is a disposal route rather than another duplicate transaction."
+    },
+    {
+      "event_type_id": "ASSET_SALE",
+      "family": "Separation",
+      "name": "Asset or asset portfolio sale",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "ASSET_SALE_01",
+          "display_order": 1,
+          "label": "Asset identified",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_02",
+          "display_order": 2,
+          "label": "Title and encumbrances verified",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_03",
+          "display_order": 3,
+          "label": "Valuation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_04",
+          "display_order": 4,
+          "label": "Buyer outreach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_05",
+          "display_order": 5,
+          "label": "Asset diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_06",
+          "display_order": 6,
+          "label": "Environmental and technical review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_07",
+          "display_order": 7,
+          "label": "Offer accepted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_08",
+          "display_order": 8,
+          "label": "Asset purchase agreement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_09",
+          "display_order": 9,
+          "label": "Lien releases and consents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_10",
+          "display_order": 10,
+          "label": "Payment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_11",
+          "display_order": 11,
+          "label": "Title transfer",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "ASSET_SALE_12",
+          "display_order": 12,
+          "label": "Tax and residual obligations settled",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Asset price, assumed liabilities, debt releases and tax are distinct; technical or commodity exposures may survive transfer."
+    },
+    {
+      "event_type_id": "CARVE_OUT",
+      "family": "Separation",
+      "name": "Carve-out / separation programme",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "CARVE_OUT_01",
+          "display_order": 1,
+          "label": "Perimeter defined",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_02",
+          "display_order": 2,
+          "label": "Standalone financials prepared",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_03",
+          "display_order": 3,
+          "label": "Shared services mapped",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_04",
+          "display_order": 4,
+          "label": "Legal entities designed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_05",
+          "display_order": 5,
+          "label": "Tax structuring",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_06",
+          "display_order": 6,
+          "label": "Debt and cash allocation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_07",
+          "display_order": 7,
+          "label": "Employee and contract mapping",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_08",
+          "display_order": 8,
+          "label": "IT and treasury separation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_09",
+          "display_order": 9,
+          "label": "TSA terms agreed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_10",
+          "display_order": 10,
+          "label": "Transfer documents signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_11",
+          "display_order": 11,
+          "label": "Consents obtained",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_12",
+          "display_order": 12,
+          "label": "Day-one readiness",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_13",
+          "display_order": 13,
+          "label": "Legal separation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_14",
+          "display_order": 14,
+          "label": "Standalone operation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CARVE_OUT_15",
+          "display_order": 15,
+          "label": "TSA exit",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Carve-out is a separation method; link to private sale, IPO or spin-off instead of treating readiness as a completed exit."
+    },
+    {
+      "event_type_id": "SPIN_OFF",
+      "family": "Separation",
+      "name": "Spin-off / demerger",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "SPIN_OFF_01",
+          "display_order": 1,
+          "label": "Strategic review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_02",
+          "display_order": 2,
+          "label": "Perimeter defined",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_03",
+          "display_order": 3,
+          "label": "Feasibility and tax assessment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_04",
+          "display_order": 4,
+          "label": "Standalone accounts",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_05",
+          "display_order": 5,
+          "label": "Capital structure allocation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_06",
+          "display_order": 6,
+          "label": "Separation agreement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_07",
+          "display_order": 7,
+          "label": "Board approval",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_08",
+          "display_order": 8,
+          "label": "Prospectus or information document if required",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_09",
+          "display_order": 9,
+          "label": "Creditor and shareholder procedures",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_10",
+          "display_order": 10,
+          "label": "Listing approval if applicable",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_11",
+          "display_order": 11,
+          "label": "Record date",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_12",
+          "display_order": 12,
+          "label": "Shares distributed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_13",
+          "display_order": 13,
+          "label": "Separate trading if listed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPIN_OFF_14",
+          "display_order": 14,
+          "label": "TSA exit",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Normally no cash sale proceeds; cash equalisation, debt allocation, distributions and new hedges still create FICC legs."
+    },
+    {
+      "event_type_id": "SPLIT_OFF",
+      "family": "Separation",
+      "name": "Split-off / exchange distribution",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "SPLIT_OFF_01",
+          "display_order": 1,
+          "label": "Separation plan",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_02",
+          "display_order": 2,
+          "label": "Standalone valuation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_03",
+          "display_order": 3,
+          "label": "Exchange structure",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_04",
+          "display_order": 4,
+          "label": "Tax and legal approvals",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_05",
+          "display_order": 5,
+          "label": "Exchange documentation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_06",
+          "display_order": 6,
+          "label": "Exchange offer launched",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_07",
+          "display_order": 7,
+          "label": "Elections received",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_08",
+          "display_order": 8,
+          "label": "Proration",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_09",
+          "display_order": 9,
+          "label": "Subsidiary shares exchanged",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_10",
+          "display_order": 10,
+          "label": "Parent shares retired",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPLIT_OFF_11",
+          "display_order": 11,
+          "label": "Separate operation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Model voluntary exchange and participation rather than assuming a pro-rata spin-off."
+    },
+    {
+      "event_type_id": "EQUITY_CARVE_IPO",
+      "family": "Separation",
+      "name": "Equity carve-out IPO",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_01",
+          "display_order": 1,
+          "label": "Subsidiary perimeter",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_02",
+          "display_order": 2,
+          "label": "Standalone readiness",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_03",
+          "display_order": 3,
+          "label": "Parent retention target",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_04",
+          "display_order": 4,
+          "label": "Separation and TSA",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_05",
+          "display_order": 5,
+          "label": "IPO preparation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_06",
+          "display_order": 6,
+          "label": "Prospectus review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_07",
+          "display_order": 7,
+          "label": "Investor education",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_08",
+          "display_order": 8,
+          "label": "Bookbuilding",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_09",
+          "display_order": 9,
+          "label": "Pricing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_10",
+          "display_order": 10,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_11",
+          "display_order": 11,
+          "label": "Subsidiary listed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "EQUITY_CARVE_IPO_12",
+          "display_order": 12,
+          "label": "Parent retained stake monitored",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Compose separation plus IPO; record retained control and later sell-down as distinct linked events."
+    },
+    {
+      "event_type_id": "IPO",
+      "family": "Equity",
+      "name": "Initial public offering",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "IPO_01",
+          "display_order": 1,
+          "label": "IPO feasibility",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_02",
+          "display_order": 2,
+          "label": "Readiness assessment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_03",
+          "display_order": 3,
+          "label": "Banks and advisers appointed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_04",
+          "display_order": 4,
+          "label": "Equity story",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_05",
+          "display_order": 5,
+          "label": "Governance and financial reporting readiness",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_06",
+          "display_order": 6,
+          "label": "Due diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_07",
+          "display_order": 7,
+          "label": "Capital restructuring",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_08",
+          "display_order": 8,
+          "label": "Prospectus drafting",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_09",
+          "display_order": 9,
+          "label": "Regulatory and exchange review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_10",
+          "display_order": 10,
+          "label": "Pilot fishing where permitted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_11",
+          "display_order": 11,
+          "label": "Intention to float",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_12",
+          "display_order": 12,
+          "label": "Investor education",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_13",
+          "display_order": 13,
+          "label": "Price range announced",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_14",
+          "display_order": 14,
+          "label": "Bookbuilding",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_15",
+          "display_order": 15,
+          "label": "Underwriting and pricing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_16",
+          "display_order": 16,
+          "label": "Allocation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_17",
+          "display_order": 17,
+          "label": "First trading",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_18",
+          "display_order": 18,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_19",
+          "display_order": 19,
+          "label": "Stabilisation and over-allotment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "IPO_20",
+          "display_order": 20,
+          "label": "Lock-up expiry",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Primary versus secondary mix and each selling shareholder currency matter; first trading is not proceeds settlement."
+    },
+    {
+      "event_type_id": "DIRECT_LIST",
+      "family": "Equity",
+      "name": "Direct listing / introduction",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "DIRECT_LIST_01",
+          "display_order": 1,
+          "label": "Listing feasibility",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_02",
+          "display_order": 2,
+          "label": "Advisers appointed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_03",
+          "display_order": 3,
+          "label": "Reporting readiness",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_04",
+          "display_order": 4,
+          "label": "Diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_05",
+          "display_order": 5,
+          "label": "Listing documents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_06",
+          "display_order": 6,
+          "label": "Regulatory review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_07",
+          "display_order": 7,
+          "label": "Exchange admission",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_08",
+          "display_order": 8,
+          "label": "Reference price or auction",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_09",
+          "display_order": 9,
+          "label": "First trading",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIRECT_LIST_10",
+          "display_order": 10,
+          "label": "Ongoing disclosure",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Do not assume new proceeds or an underwritten bookbuild; any simultaneous capital raising requires its own structure."
+    },
+    {
+      "event_type_id": "DUAL_TRACK",
+      "family": "Programme",
+      "name": "Dual-track sale and IPO",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "DUAL_TRACK_01",
+          "display_order": 1,
+          "label": "Exit review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_02",
+          "display_order": 2,
+          "label": "Sale and IPO advisers",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_03",
+          "display_order": 3,
+          "label": "Shared readiness and diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_04",
+          "display_order": 4,
+          "label": "Buyer outreach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_05",
+          "display_order": 5,
+          "label": "IPO preparation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_06",
+          "display_order": 6,
+          "label": "Sale bids",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_07",
+          "display_order": 7,
+          "label": "Investor feedback",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_08",
+          "display_order": 8,
+          "label": "Route economics compared",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_09",
+          "display_order": 9,
+          "label": "Route selected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_10",
+          "display_order": 10,
+          "label": "Alternative track paused or terminated",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DUAL_TRACK_11",
+          "display_order": 11,
+          "label": "Selected route executed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Parent programme with competing child processes. Conditional outcomes and proceeds are mutually exclusive unless scope is deliberately split."
+    },
+    {
+      "event_type_id": "FOLLOW_ON",
+      "family": "Equity",
+      "name": "Follow-on equity offering / accelerated bookbuild",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "FOLLOW_ON_01",
+          "display_order": 1,
+          "label": "Funding or sell-down decision",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_02",
+          "display_order": 2,
+          "label": "Mandate",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_03",
+          "display_order": 3,
+          "label": "Diligence and documentation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_04",
+          "display_order": 4,
+          "label": "Wall-crossing where permitted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_05",
+          "display_order": 5,
+          "label": "Launch",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_06",
+          "display_order": 6,
+          "label": "Bookbuilding",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_07",
+          "display_order": 7,
+          "label": "Price and allocation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_08",
+          "display_order": 8,
+          "label": "Underwriting commitment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_09",
+          "display_order": 9,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_10",
+          "display_order": 10,
+          "label": "Proceeds deployment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "FOLLOW_ON_11",
+          "display_order": 11,
+          "label": "Lock-up monitoring",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Distinguish primary issuer fundraising from secondary shareholder sell-down and track each beneficiary."
+    },
+    {
+      "event_type_id": "RIGHTS",
+      "family": "Equity",
+      "name": "Rights issue",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "RIGHTS_01",
+          "display_order": 1,
+          "label": "Capital need",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_02",
+          "display_order": 2,
+          "label": "Underwriting discussions",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_03",
+          "display_order": 3,
+          "label": "Board proposal",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_04",
+          "display_order": 4,
+          "label": "Shareholder authorisation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_05",
+          "display_order": 5,
+          "label": "Prospectus review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_06",
+          "display_order": 6,
+          "label": "Terms fixed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_07",
+          "display_order": 7,
+          "label": "Record date",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_08",
+          "display_order": 8,
+          "label": "Rights trading",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_09",
+          "display_order": 9,
+          "label": "Subscription period",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_10",
+          "display_order": 10,
+          "label": "Take-up results",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_11",
+          "display_order": 11,
+          "label": "Rump placement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_12",
+          "display_order": 12,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RIGHTS_13",
+          "display_order": 13,
+          "label": "New shares admitted",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Subscription proceeds can vary with underwriting and take-up; underwriting obligations and currency are separate exposures."
+    },
+    {
+      "event_type_id": "BUYBACK",
+      "family": "Equity",
+      "name": "Share repurchase / tender offer",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "BUYBACK_01",
+          "display_order": 1,
+          "label": "Capital allocation review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BUYBACK_02",
+          "display_order": 2,
+          "label": "Authority obtained",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BUYBACK_03",
+          "display_order": 3,
+          "label": "Programme or tender announced",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BUYBACK_04",
+          "display_order": 4,
+          "label": "Broker mandate",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BUYBACK_05",
+          "display_order": 5,
+          "label": "Trading or tender period",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BUYBACK_06",
+          "display_order": 6,
+          "label": "Purchases or acceptances",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BUYBACK_07",
+          "display_order": 7,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BUYBACK_08",
+          "display_order": 8,
+          "label": "Cancellation or treasury treatment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BUYBACK_09",
+          "display_order": 9,
+          "label": "Programme complete",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Separate maximum authorisation from actual purchases, with rolling cash and FX settlement."
+    },
+    {
+      "event_type_id": "SPECIAL_DIV",
+      "family": "Equity",
+      "name": "Special dividend / capital return",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "SPECIAL_DIV_01",
+          "display_order": 1,
+          "label": "Excess capital assessment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPECIAL_DIV_02",
+          "display_order": 2,
+          "label": "Solvency and liquidity review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPECIAL_DIV_03",
+          "display_order": 3,
+          "label": "Board proposal",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPECIAL_DIV_04",
+          "display_order": 4,
+          "label": "Shareholder approval if required",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPECIAL_DIV_05",
+          "display_order": 5,
+          "label": "Ex-date",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPECIAL_DIV_06",
+          "display_order": 6,
+          "label": "Record date",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPECIAL_DIV_07",
+          "display_order": 7,
+          "label": "Payment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SPECIAL_DIV_08",
+          "display_order": 8,
+          "label": "Withholding tax and repatriation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Do not book acquisition proceeds a second time when subsequently distributed; identify intercompany versus external legs."
+    },
+    {
+      "event_type_id": "REFI_LOAN",
+      "family": "Debt",
+      "name": "Loan refinancing",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "REFI_LOAN_01",
+          "display_order": 1,
+          "label": "Maturity and liquidity review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_02",
+          "display_order": 2,
+          "label": "Debt and hedge inventory",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_03",
+          "display_order": 3,
+          "label": "Funding strategy",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_04",
+          "display_order": 4,
+          "label": "Lender outreach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_05",
+          "display_order": 5,
+          "label": "Term sheets",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_06",
+          "display_order": 6,
+          "label": "Credit approvals",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_07",
+          "display_order": 7,
+          "label": "Mandated arrangers selected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_08",
+          "display_order": 8,
+          "label": "Facility negotiation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_09",
+          "display_order": 9,
+          "label": "Security and consents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_10",
+          "display_order": 10,
+          "label": "Facility signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_11",
+          "display_order": 11,
+          "label": "Conditions precedent",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_12",
+          "display_order": 12,
+          "label": "New debt drawn",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_13",
+          "display_order": 13,
+          "label": "Old debt repaid",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_14",
+          "display_order": 14,
+          "label": "Old security released",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "REFI_LOAN_15",
+          "display_order": 15,
+          "label": "Hedges novated terminated or retained",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Signing a facility is not drawing it; map old and new debt and derivative break costs separately."
+    },
+    {
+      "event_type_id": "BOND",
+      "family": "Debt",
+      "name": "Bond issuance / refinancing",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "BOND_01",
+          "display_order": 1,
+          "label": "Funding plan",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_02",
+          "display_order": 2,
+          "label": "Ratings engagement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_03",
+          "display_order": 3,
+          "label": "Banks mandated",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_04",
+          "display_order": 4,
+          "label": "Documentation and diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_05",
+          "display_order": 5,
+          "label": "Investor marketing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_06",
+          "display_order": 6,
+          "label": "Issue announced",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_07",
+          "display_order": 7,
+          "label": "Books opened",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_08",
+          "display_order": 8,
+          "label": "Price guidance",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_09",
+          "display_order": 9,
+          "label": "Pricing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_10",
+          "display_order": 10,
+          "label": "Allocation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_11",
+          "display_order": 11,
+          "label": "Subscription agreement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_12",
+          "display_order": 12,
+          "label": "Settlement and issuance",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_13",
+          "display_order": 13,
+          "label": "Old debt redemption if relevant",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BOND_14",
+          "display_order": 14,
+          "label": "Proceeds swapped or deployed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Track announcement, pricing and settlement independently; duration and FX exposure may crystallise at different times."
+    },
+    {
+      "event_type_id": "PRIVATE_DEBT",
+      "family": "Debt",
+      "name": "Private debt placement",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_01",
+          "display_order": 1,
+          "label": "Borrower strategy",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_02",
+          "display_order": 2,
+          "label": "Lender selection",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_03",
+          "display_order": 3,
+          "label": "NDA and information pack",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_04",
+          "display_order": 4,
+          "label": "Diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_05",
+          "display_order": 5,
+          "label": "Indicative terms",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_06",
+          "display_order": 6,
+          "label": "Credit committee",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_07",
+          "display_order": 7,
+          "label": "Exclusivity if agreed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_08",
+          "display_order": 8,
+          "label": "Final documentation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_09",
+          "display_order": 9,
+          "label": "Intercreditor and security",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_10",
+          "display_order": 10,
+          "label": "Commitment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_11",
+          "display_order": 11,
+          "label": "Drawdown",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PRIVATE_DEBT_12",
+          "display_order": 12,
+          "label": "Monitoring",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Allow delayed draws, PIK, unitranche and multi-currency tranches without duplicating the parent financing."
+    },
+    {
+      "event_type_id": "A_AND_E",
+      "family": "Debt",
+      "name": "Amend-and-extend / repricing",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "A_AND_E_01",
+          "display_order": 1,
+          "label": "Debt review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_02",
+          "display_order": 2,
+          "label": "Lender approach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_03",
+          "display_order": 3,
+          "label": "Consent thresholds mapped",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_04",
+          "display_order": 4,
+          "label": "Terms proposed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_05",
+          "display_order": 5,
+          "label": "Lender commitments",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_06",
+          "display_order": 6,
+          "label": "Consent fees agreed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_07",
+          "display_order": 7,
+          "label": "Amendment signed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_08",
+          "display_order": 8,
+          "label": "Conditions satisfied",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_09",
+          "display_order": 9,
+          "label": "New maturity or margin effective",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "A_AND_E_10",
+          "display_order": 10,
+          "label": "Hedge tenor reviewed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Debt may remain outstanding with no principal cash movement; changed margin or maturity can trigger hedge review."
+    },
+    {
+      "event_type_id": "DEBT_TENDER",
+      "family": "Debt",
+      "name": "Debt tender / exchange / consent solicitation",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "DEBT_TENDER_01",
+          "display_order": 1,
+          "label": "Liability review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_02",
+          "display_order": 2,
+          "label": "Eligible instruments identified",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_03",
+          "display_order": 3,
+          "label": "Terms and documentation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_04",
+          "display_order": 4,
+          "label": "Launch",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_05",
+          "display_order": 5,
+          "label": "Early participation deadline",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_06",
+          "display_order": 6,
+          "label": "Consent results",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_07",
+          "display_order": 7,
+          "label": "Expiry",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_08",
+          "display_order": 8,
+          "label": "Acceptance and proration",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_09",
+          "display_order": 9,
+          "label": "New debt pricing if linked",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_10",
+          "display_order": 10,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_TENDER_11",
+          "display_order": 11,
+          "label": "Old debt cancellation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Offer launch does not equal acceptance or settlement; model minimum conditions, proration and fallback outcomes."
+    },
+    {
+      "event_type_id": "DIVIDEND_RECAP",
+      "family": "Debt",
+      "name": "Dividend recapitalisation",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_01",
+          "display_order": 1,
+          "label": "Sponsor distribution review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_02",
+          "display_order": 2,
+          "label": "Debt capacity",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_03",
+          "display_order": 3,
+          "label": "Lender marketing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_04",
+          "display_order": 4,
+          "label": "Diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_05",
+          "display_order": 5,
+          "label": "Commitment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_06",
+          "display_order": 6,
+          "label": "Financing documents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_07",
+          "display_order": 7,
+          "label": "Drawdown",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_08",
+          "display_order": 8,
+          "label": "Dividend declaration",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_09",
+          "display_order": 9,
+          "label": "Dividend payment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DIVIDEND_RECAP_10",
+          "display_order": 10,
+          "label": "Hedge resizing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Separate new borrower leverage from sponsor receipt; related cash legs eliminate at group level where appropriate."
+    },
+    {
+      "event_type_id": "BRIDGE_TAKEOUT",
+      "family": "Debt",
+      "name": "Bridge-to-permanent financing",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_01",
+          "display_order": 1,
+          "label": "Bridge mandate",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_02",
+          "display_order": 2,
+          "label": "Commitment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_03",
+          "display_order": 3,
+          "label": "Acquisition funding readiness",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_04",
+          "display_order": 4,
+          "label": "Bridge draw if needed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_05",
+          "display_order": 5,
+          "label": "Permanent funding preparation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_06",
+          "display_order": 6,
+          "label": "Bond or term loan launch",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_07",
+          "display_order": 7,
+          "label": "Pricing or allocation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_08",
+          "display_order": 8,
+          "label": "Permanent funding settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_09",
+          "display_order": 9,
+          "label": "Bridge repayment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "BRIDGE_TAKEOUT_10",
+          "display_order": 10,
+          "label": "Hedge transfer",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Bridge can remain undrawn if permanent financing settles first; avoid assuming two simultaneous funded balances."
+    },
+    {
+      "event_type_id": "SECURITISATION",
+      "family": "Debt",
+      "name": "Securitisation / receivables financing",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "SECURITISATION_01",
+          "display_order": 1,
+          "label": "Asset pool selection",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_02",
+          "display_order": 2,
+          "label": "Eligibility diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_03",
+          "display_order": 3,
+          "label": "Structure and SPV",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_04",
+          "display_order": 4,
+          "label": "Ratings if relevant",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_05",
+          "display_order": 5,
+          "label": "Servicing and liquidity arrangements",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_06",
+          "display_order": 6,
+          "label": "Investor marketing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_07",
+          "display_order": 7,
+          "label": "Documentation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_08",
+          "display_order": 8,
+          "label": "Pricing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_09",
+          "display_order": 9,
+          "label": "Assets transferred",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_10",
+          "display_order": 10,
+          "label": "Notes issued or facility drawn",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_11",
+          "display_order": 11,
+          "label": "Collections and waterfalls",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SECURITISATION_12",
+          "display_order": 12,
+          "label": "Amortisation or revolving period end",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Currency mismatches, basis, prepayment, liquidity support and waterfall priority require pool and tranche records."
+    },
+    {
+      "event_type_id": "PROJECT_FINANCE",
+      "family": "Debt",
+      "name": "Project financing / infrastructure financial close",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_01",
+          "display_order": 1,
+          "label": "Project development",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_02",
+          "display_order": 2,
+          "label": "Permits",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_03",
+          "display_order": 3,
+          "label": "Technical studies",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_04",
+          "display_order": 4,
+          "label": "Offtake or concession",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_05",
+          "display_order": 5,
+          "label": "Construction contracts",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_06",
+          "display_order": 6,
+          "label": "Financial model",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_07",
+          "display_order": 7,
+          "label": "Lender diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_08",
+          "display_order": 8,
+          "label": "Terms and hedging strategy",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_09",
+          "display_order": 9,
+          "label": "Credit approval",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_10",
+          "display_order": 10,
+          "label": "Finance and security documents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_11",
+          "display_order": 11,
+          "label": "Conditions precedent",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_12",
+          "display_order": 12,
+          "label": "Financial close",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_13",
+          "display_order": 13,
+          "label": "Staged drawdowns",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_14",
+          "display_order": 14,
+          "label": "Construction",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_15",
+          "display_order": 15,
+          "label": "Completion tests",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_16",
+          "display_order": 16,
+          "label": "Operations",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "PROJECT_FINANCE_17",
+          "display_order": 17,
+          "label": "Refinancing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Development, financial close, first draw and commercial operation are distinct; track FX capex, interest during construction and commodity-linked revenue."
+    },
+    {
+      "event_type_id": "SALE_LEASEBACK",
+      "family": "Separation",
+      "name": "Sale and leaseback",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_01",
+          "display_order": 1,
+          "label": "Asset selection",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_02",
+          "display_order": 2,
+          "label": "Lease versus own analysis",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_03",
+          "display_order": 3,
+          "label": "Valuation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_04",
+          "display_order": 4,
+          "label": "Investor outreach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_05",
+          "display_order": 5,
+          "label": "Lease terms",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_06",
+          "display_order": 6,
+          "label": "Buyer diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_07",
+          "display_order": 7,
+          "label": "Sale and lease documents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_08",
+          "display_order": 8,
+          "label": "Consents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_09",
+          "display_order": 9,
+          "label": "Sale completion",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_10",
+          "display_order": 10,
+          "label": "Lease commencement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "SALE_LEASEBACK_11",
+          "display_order": 11,
+          "label": "Lease payments",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Sale receipt and long-term rent create different currency and rate sensitivities; separate accounting classification from economics."
+    },
+    {
+      "event_type_id": "RESTRUCT_OOC",
+      "family": "Restructuring",
+      "name": "Out-of-court financial restructuring",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_01",
+          "display_order": 1,
+          "label": "Liquidity stress detected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_02",
+          "display_order": 2,
+          "label": "13-week cash forecast",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_03",
+          "display_order": 3,
+          "label": "Advisers appointed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_04",
+          "display_order": 4,
+          "label": "Creditor groups mapped",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_05",
+          "display_order": 5,
+          "label": "Standstill request",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_06",
+          "display_order": 6,
+          "label": "Independent business review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_07",
+          "display_order": 7,
+          "label": "Options assessed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_08",
+          "display_order": 8,
+          "label": "Term sheet",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_09",
+          "display_order": 9,
+          "label": "Creditor negotiations",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_10",
+          "display_order": 10,
+          "label": "Support agreement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_11",
+          "display_order": 11,
+          "label": "Consent thresholds achieved",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_12",
+          "display_order": 12,
+          "label": "Definitive documents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_13",
+          "display_order": 13,
+          "label": "New money",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_14",
+          "display_order": 14,
+          "label": "Debt amendment or equitisation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_15",
+          "display_order": 15,
+          "label": "Restructuring effective",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_OOC_16",
+          "display_order": 16,
+          "label": "Monitoring",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Distress does not itself terminate derivatives; record contract-specific default, collateral, close-out and hedge replacement facts."
+    },
+    {
+      "event_type_id": "RESTRUCT_COURT",
+      "family": "Restructuring",
+      "name": "Formal restructuring / reorganisation",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_01",
+          "display_order": 1,
+          "label": "Distress assessment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_02",
+          "display_order": 2,
+          "label": "Procedure selection",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_03",
+          "display_order": 3,
+          "label": "Filing or application",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_04",
+          "display_order": 4,
+          "label": "Admission or opening order",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_05",
+          "display_order": 5,
+          "label": "Administrator appointed where applicable",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_06",
+          "display_order": 6,
+          "label": "Stay or moratorium",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_07",
+          "display_order": 7,
+          "label": "Claims verified",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_08",
+          "display_order": 8,
+          "label": "Business plan",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_09",
+          "display_order": 9,
+          "label": "Creditor classes",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_10",
+          "display_order": 10,
+          "label": "Plan proposal",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_11",
+          "display_order": 11,
+          "label": "Voting",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_12",
+          "display_order": 12,
+          "label": "Court confirmation if required",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_13",
+          "display_order": 13,
+          "label": "Conditions fulfilled",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_14",
+          "display_order": 14,
+          "label": "Plan effective",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_15",
+          "display_order": 15,
+          "label": "Exit financing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "RESTRUCT_COURT_16",
+          "display_order": 16,
+          "label": "Emergence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Use country and procedure overlays; voting, stays, priority and cram-down cannot be imported unchanged between jurisdictions."
+    },
+    {
+      "event_type_id": "DISTRESSED_SALE",
+      "family": "Restructuring",
+      "name": "Distressed M&A / insolvency asset sale",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_01",
+          "display_order": 1,
+          "label": "Distress or filing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_02",
+          "display_order": 2,
+          "label": "Seller authority verified",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_03",
+          "display_order": 3,
+          "label": "Accelerated marketing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_04",
+          "display_order": 4,
+          "label": "NDA",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_05",
+          "display_order": 5,
+          "label": "Limited diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_06",
+          "display_order": 6,
+          "label": "Bids",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_07",
+          "display_order": 7,
+          "label": "Funding proof",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_08",
+          "display_order": 8,
+          "label": "Preferred bidder",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_09",
+          "display_order": 9,
+          "label": "Sale agreement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_10",
+          "display_order": 10,
+          "label": "Creditor or court approval where required",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_11",
+          "display_order": 11,
+          "label": "Payment",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_12",
+          "display_order": 12,
+          "label": "Assets or business transferred",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DISTRESSED_SALE_13",
+          "display_order": 13,
+          "label": "Residual estate administered",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Link accelerated sale to restructuring case and asset perimeter; seller authority and clean-title assumptions require evidence."
+    },
+    {
+      "event_type_id": "DEBT_EQUITY_SWAP",
+      "family": "Restructuring",
+      "name": "Debt-for-equity swap",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_01",
+          "display_order": 1,
+          "label": "Unsustainable leverage identified",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_02",
+          "display_order": 2,
+          "label": "Claims and valuation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_03",
+          "display_order": 3,
+          "label": "Recovery analysis",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_04",
+          "display_order": 4,
+          "label": "Exchange terms",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_05",
+          "display_order": 5,
+          "label": "Creditor support",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_06",
+          "display_order": 6,
+          "label": "Equity authorisations",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_07",
+          "display_order": 7,
+          "label": "Regulatory approvals",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_08",
+          "display_order": 8,
+          "label": "Exchange documentation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_09",
+          "display_order": 9,
+          "label": "Debt cancellation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_10",
+          "display_order": 10,
+          "label": "Shares issued",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "DEBT_EQUITY_SWAP_11",
+          "display_order": 11,
+          "label": "Control and governance reset",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Track extinguished debt and hedge treatment separately; share issuance often has no corresponding cash receipt."
+    },
+    {
+      "event_type_id": "OP_RESTRUCT",
+      "family": "Restructuring",
+      "name": "Operational restructuring / closure",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "OP_RESTRUCT_01",
+          "display_order": 1,
+          "label": "Performance review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_02",
+          "display_order": 2,
+          "label": "Plan developed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_03",
+          "display_order": 3,
+          "label": "Board approval",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_04",
+          "display_order": 4,
+          "label": "Employee consultation where required",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_05",
+          "display_order": 5,
+          "label": "Announcement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_06",
+          "display_order": 6,
+          "label": "Site or activity rationalisation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_07",
+          "display_order": 7,
+          "label": "Contract exits",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_08",
+          "display_order": 8,
+          "label": "Asset disposals",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_09",
+          "display_order": 9,
+          "label": "Implementation payments",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_10",
+          "display_order": 10,
+          "label": "Savings achieved",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "OP_RESTRUCT_11",
+          "display_order": 11,
+          "label": "Programme complete",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Restructuring provisions are not cash settlement; timing of redundancy, lease and commodity termination payments matters."
+    },
+    {
+      "event_type_id": "LIQUIDATION",
+      "family": "Restructuring",
+      "name": "Liquidation / winding-up",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "LIQUIDATION_01",
+          "display_order": 1,
+          "label": "Viability review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LIQUIDATION_02",
+          "display_order": 2,
+          "label": "Decision or court order",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LIQUIDATION_03",
+          "display_order": 3,
+          "label": "Liquidator appointed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LIQUIDATION_04",
+          "display_order": 4,
+          "label": "Claims registered",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LIQUIDATION_05",
+          "display_order": 5,
+          "label": "Assets realised",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LIQUIDATION_06",
+          "display_order": 6,
+          "label": "Secured claims resolved",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LIQUIDATION_07",
+          "display_order": 7,
+          "label": "Distributions by priority",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LIQUIDATION_08",
+          "display_order": 8,
+          "label": "Residual distribution",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "LIQUIDATION_09",
+          "display_order": 9,
+          "label": "Dissolution",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Gross asset realisations differ from stakeholder recoveries; cash forecasts must respect priority and restricted cash."
+    },
+    {
+      "event_type_id": "CONTINUATION",
+      "family": "Ownership",
+      "name": "Sponsor continuation vehicle / GP-led secondary",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "CONTINUATION_01",
+          "display_order": 1,
+          "label": "Portfolio review",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_02",
+          "display_order": 2,
+          "label": "Advisers",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_03",
+          "display_order": 3,
+          "label": "Asset valuation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_04",
+          "display_order": 4,
+          "label": "Conflict process",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_05",
+          "display_order": 5,
+          "label": "Investor outreach",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_06",
+          "display_order": 6,
+          "label": "Diligence",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_07",
+          "display_order": 7,
+          "label": "Lead investor bid",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_08",
+          "display_order": 8,
+          "label": "LP election materials",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_09",
+          "display_order": 9,
+          "label": "Sell or roll elections",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_10",
+          "display_order": 10,
+          "label": "Financing",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_11",
+          "display_order": 11,
+          "label": "Transaction documents",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_12",
+          "display_order": 12,
+          "label": "Approvals",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_13",
+          "display_order": 13,
+          "label": "Settlement",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "CONTINUATION_14",
+          "display_order": 14,
+          "label": "Assets transferred to new vehicle",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Track selling LP cash, rolling interests, new investor funding and asset-level refinancing without double counting."
+    },
+    {
+      "event_type_id": "STRATEGIC_REVIEW",
+      "family": "Programme",
+      "name": "Strategic alternatives review",
+      "illustrative_milestones": [
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_01",
+          "display_order": 1,
+          "label": "Board review initiated",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_02",
+          "display_order": 2,
+          "label": "Advisers appointed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_03",
+          "display_order": 3,
+          "label": "Alternatives defined",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_04",
+          "display_order": 4,
+          "label": "Preliminary valuation",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_05",
+          "display_order": 5,
+          "label": "Market soundings",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_06",
+          "display_order": 6,
+          "label": "Options assessed",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_07",
+          "display_order": 7,
+          "label": "Preferred path selected",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_08",
+          "display_order": 8,
+          "label": "Child transaction launched",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        },
+        {
+          "milestone_definition_id": "STRATEGIC_REVIEW_09",
+          "display_order": 9,
+          "label": "Review concluded",
+          "required_by_default": false,
+          "applicability": "Determine from selected route, contract and jurisdiction."
+        }
+      ],
+      "ficc_and_modelling_notes": "Sale, IPO, merger, refinancing and no-action are alternative outcomes; a review is not evidence of an active sale mandate."
+    }
+  ]
+}

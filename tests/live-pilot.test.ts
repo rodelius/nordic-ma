@@ -5,7 +5,7 @@ import {PGlite} from '@electric-sql/pglite';
 import {parseFeed,configuredFeedUrl,fetchCisionFeed} from '../lib/source-feed';
 import {validateSubscription} from '../lib/push-subscription';
 import {jobsAuthorized,livePushReady,monitoringEnabled} from '../lib/live-config';
-import {seed} from '../lib/seed';
+import {seed} from './legacy-support/seed';
 const uid='00000000-0000-0000-0000-000000000001',other='00000000-0000-0000-0000-000000000002';
 test('RSS deduplicates, decodes and filters old, future, foreign and non-M&A items',()=>{
  const now=Date.now(),date=new Date(now-1000).toUTCString();const item=(title:string,link='https://news.cision.com/addtech/r/acquisition,c123',pub=date)=>`<item><title>${title}</title><link>${link}</link><pubDate>${pub}</pubDate><description><![CDATA[<p>A source excerpt</p>]]></description></item>`;

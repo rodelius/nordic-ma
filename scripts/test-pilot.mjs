@@ -16,7 +16,7 @@ try{
  await run({APP_MODE:'pilot',APP_URL:'https://pilot.example.com',SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test_public_key_12345',INGEST_TOKEN:'test-token'},async request=>{
  const r=await request('/');assert.equal(r.status,307);assert.equal(r.headers.get('location'),'https://pilot.example.com/login');assert.match(r.headers.get('cache-control'),/no-store/);
  const login=await request('/login');assert.equal(login.status,200);assert.match(await login.text(),/Sign in to the pilot/);
- for(const path of ['/api/deals','/api/brief','/api/readiness','/api/push','/api/learning','/api/reviews'])assert.equal((await request(path)).status,401,path);
+ for(const path of ['/api/corporate-events','/api/deals','/api/brief','/api/readiness','/api/push','/api/learning','/api/reviews','/api/feedback/export'])assert.equal((await request(path)).status,401,path);
  assert.equal((await request('/api/events',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:'{}'})).status,401);
  });
  await run({APP_MODE:'pilot',PILOT_STAGE:'2',APP_URL:'https://pilot.example.com',SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test_public_key_12345',CRON_SECRET:'S'.repeat(40),MONITORING_ENABLED:'false',NOTIFICATIONS_ENABLED:'false'},async request=>{

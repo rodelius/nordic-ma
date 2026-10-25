@@ -11,7 +11,7 @@ export async function POST(req:Request){
  if(req.headers.get('origin')!==(pilot?pilotConfig().appUrl:new URL(req.url).origin))return Response.json({error:'Invalid origin'},{status:403});
  try{const raw=await req.text();if(raw.length>8000)throw Error('Subscription too large');const s=validateSubscription(JSON.parse(raw));
  if(pilot){const {client,user}=await requirePilotMember();const {error}=await client.from('push_subscriptions').upsert({...s,user_id:user.id,enabled:true},{onConflict:'endpoint'});if(error)throw Error('Could not save your subscription');}
- else{const {saveSubscription}=await import('@/lib/store');saveSubscription(s);}
+ else{const {saveSubscription}=await import('@/lib/corporate-store');saveSubscription(s);}
  return Response.json({ok:true});
  }catch{return Response.json({error:'Invalid subscription or insufficient access'},{status:400});}
 }
@@ -20,6 +20,6 @@ export async function DELETE(req:Request){
  if(pilot&&!stage2Enabled())return Response.json({error:'Stage 1 is read-only'},{status:403});
  if(req.headers.get('origin')!==(pilot?pilotConfig().appUrl:new URL(req.url).origin))return Response.json({error:'Invalid origin'},{status:403});
  if(pilot){const {client,user}=await requirePilotMember();const {error}=await client.from('push_subscriptions').update({enabled:false}).eq('user_id',user.id);if(error)return Response.json({error:'Could not disable alerts'},{status:400});}
- else{const {removeSubscription}=await import('@/lib/store');const s=await req.json();if(typeof s.endpoint==='string')removeSubscription(s.endpoint);}
+ else{const {removeSubscription}=await import('@/lib/corporate-store');const s=await req.json();if(typeof s.endpoint==='string')removeSubscription(s.endpoint);}
  return Response.json({ok:true});
 }
