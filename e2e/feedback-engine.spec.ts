@@ -16,7 +16,7 @@ test('dismissal reasons and feedback corrections are explicit; shadow promotion 
  await expect(page.getByLabel('Dismissal reason')).toBeVisible();await page.getByRole('button',{name:'Dismiss and record feedback'}).click();expect(dismissed).toBe(false);
  await page.getByLabel('Dismissal reason').selectOption('reporting');await page.getByLabel('Feedback note (optional)').fill('Only a routine shareholding disclosure.');await page.getByRole('button',{name:'Dismiss and record feedback'}).click();
  await expect(page.getByText('No pending candidates. Scan the source to check for recent announcements.')).toBeVisible();expect(bodies[0]).toMatchObject({action:'dismiss',reason:'reporting',note:'Only a routine shareholding disclosure.'});
- await page.getByText('Latest 15 feedback decisions',{exact:true}).click();await page.getByRole('button',{name:'Correct or exclude feedback'}).click();
+ await page.getByText(/Feedback decisions ·/).click();await page.getByRole('button',{name:'Correct or exclude feedback'}).click();
  await page.getByLabel('Correct label').selectOption('exclude');await page.getByLabel('Why are you correcting this feedback?').fill('Exclude this example from the training dataset.');await page.getByRole('button',{name:'Save feedback correction'}).click();
  await expect(page.getByText('exclude · retracted',{exact:false})).toBeVisible();expect(bodies.some(b=>b.action==='exclude'&&b.sourceId===item.id)).toBe(true);
  await page.getByRole('button',{name:'Evaluate & save version'}).click();await page.getByLabel('Saved learning model').selectOption('a'.repeat(64));await expect(page.getByRole('button',{name:'Activate selected ranking'})).toBeDisabled();

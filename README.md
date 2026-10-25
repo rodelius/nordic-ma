@@ -12,7 +12,7 @@ GitHub Codespaces installs dependencies through the existing devcontainer. Run `
 
 ## Production
 
-Use the existing Supabase/Vercel pilot. This version requires migrations 001–007; existing installations through 006 apply only 007. **007 is a breaking cutover:** it archives legacy data, retires old writes and removes old active fields. Back up and coordinate database migration with deployment using the [cutover guide](docs/corporate-event-model.md). No production migration is run by preparing this repository.
+Use the existing Supabase/Vercel pilot. This version requires migrations 001–008. Installations through 007 apply only the additive migration 008, following the [manual-review rollout](docs/manual-review.md). Installations through 006 must first complete 007. **007 is a breaking cutover:** it archives legacy data, retires old writes and removes old active fields. Back up and coordinate database migration with deployment using the [cutover guide](docs/corporate-event-model.md). No production migration is run by preparing this repository.
 
 Existing authentication, invited membership, reviewer permissions, Cision source collection and push delivery gates remain. Collection and delivery default off. `LEARNING_ENABLED=true` enables the separate evaluated relevance-ranking workflow; field-level review audit is retained independently.
 
@@ -37,4 +37,6 @@ npx playwright install --with-deps chromium
 CI=true CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")" npm run test:e2e
 ```
 
-Historical migration regressions remain under `tests/legacy-support`; the application does not import the old Deal model. Earlier rollout documents describe earlier releases; the corporate-event guide is authoritative for this version.
+Historical migration regressions remain under `tests/legacy-support`; the application does not import the old Deal model. Earlier rollout documents describe earlier releases; the corporate-event guide covers the model cutover and the manual-review guide defines the current review policy.
+
+Manual-review upgrade: apply migration 008 after 007 and follow [task-based review rollout](docs/manual-review.md). This version uses compact task groups, optional evidence/nexus, core-only approval and product-aware currency selection.
