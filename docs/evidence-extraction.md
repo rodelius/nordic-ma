@@ -1,57 +1,70 @@
-# Full-article extraction: manual pilot
+# Full-article extraction: Python rules pilot
 
-This release adds reviewer-triggered extraction into the canonical corporate-event model. It does not start background extraction, approve events, change queue-ranking models, or alter existing source collection/notification settings. The former excerpt-to-whole-graph `/api/analyze` endpoint is retired (410).
+Extraction now uses a deterministic Python parser, not an AI provider. It runs entirely on standard-library text rules and makes **no OpenAI requests or AI token charges**. Ordinary Vercel and Supabase hosting/storage usage still applies.
 
-## Release and configuration
+Migration 010 is storage-only and engine-neutral: it retains extraction runs, quotations and evaluation results. Python belongs in application code, not in a Supabase SQL migration. **The SQL file has not been changed.**
 
-1. Review the branch and its verification run.
-2. In Supabase SQL Editor, apply **only `202610250010_evidence_extraction.sql`** if the project is already through 009. Earlier installations must finish the prior migrations in order. Do not rerun 007–009. Migration 010 adds separate extraction/evaluation tables and preserves reviews and event graphs.
-3. In Vercel, set server-only `AI_API_KEY` to an OpenAI API key and `AI_MODEL` to `gpt-4.1-mini` (the default) or a compatible model supporting Chat Completions JSON mode and the configured token/temperature parameters. Never use NEXT_PUBLIC or paste credentials into chat. The existing `SUPABASE_SECRET_KEY` is required to retain server-generated extraction artifacts; it remains server-only.
-4. Merge/deploy and sign in as an invited reviewer with `PILOT_STAGE=2`.
-5. Validate one pending-source extraction and one saved-case comparison below. No new scheduler or automatic-extraction flag is introduced.
+## Release and browser-only setup
 
-Production Vercel needs outbound HTTPS to `news.cision.com`, `api.openai.com` and the existing Supabase project. For Codex network validation, add `api.openai.com` through the environment's supported network settings if you want to test the provider there. This repository's tests mock provider responses and do not need an API key. No live provider or private production review benchmark was run while preparing this release.
+1. Review the updated `evidence-extraction` branch/PR and green verification run. It includes the original extraction workflow and this rules-engine replacement.
+2. If the database is through 009, apply **only `202610250010_evidence_extraction.sql`**. If 010 was already applied, **run no SQL for this update**. Do not rerun older migrations.
+3. Keep existing server-only `APP_URL`, `SUPABASE_SECRET_KEY` and reviewer-stage settings in Vercel. `APP_URL` must be this deployment's exact HTTPS origin. No AI_API_KEY or AI_MODEL is required or read; any old AI variables can be removed.
+4. Merge/deploy. Vercel deploys `api/rule_parser.py` as a Python function alongside Next.js. `vercel.json` includes its `python/**` implementation files. No pip packages, model downloads or external parser service are needed.
+5. Open **News & reviews → Review → Full article & suggestions → Extract full article**. Check the quotations and rule IDs, apply selected fields to the draft, and approve manually.
+6. Open **Extraction quality · manual pilot** to compare parser suggestions with saved reviews. Start with varied cases and inspect omissions and failures as well as agreement.
 
-## Review a pending source
+The application fetches the public Cision article, then sends its normalized text to its own signed Python endpoint. The Python function cannot fetch links, call an AI provider, approve events or access the database. Internal request signatures are short-lived and bound to the exact body, using a domain-separated key derived from the existing server worker secret. The secret itself is never sent in HTTP headers or the body. Unsigned requests receive 403.
 
-1. Open **News & reviews → Review → Full article & suggestions**.
-2. Click **Extract full article**. This fetches the article and makes one provider request. The feed excerpt is never substituted when retrieval fails.
-3. Expand **Read retrieved article**. Check the text, retrieval time and content hash. Each field suggestion shows a verbatim quotation and character offsets in this normalized text.
-4. Select fields, including referenced party records where needed. **Apply selected suggestions to draft** is an explicit action. It can overwrite selected current draft values; unselected fields remain unchanged. If record identity is ambiguous, a new record is added rather than silently merging multiple instruments/parties.
-5. Inspect the task-group editor, save a draft if useful, then confirm the source and approve manually. Applied factual suggestions create linked **UNREVIEWED** Claim/ClaimSupport records. Human review of quotations is still necessary; text presence does not prove that the chosen classification is correct.
+For Codespaces/local development, install Python 3 (3.12 is tested) and Node 24; the devcontainer now installs Python automatically. The Next.js route invokes the same parser as a bounded local subprocess using stdin, without a shell. Vercel Node functions do not assume a Python executable exists: they use the Python function instead. Manual reviewer and source-selection checks remain in the Next.js route.
 
-The review retains extraction run/selected-field provenance. Reopening a hashed article source preserves that article's actual retrieval timestamp. Closing during extraction does not approve or apply anything; reopen and select the retained run after it completes. The editor lists the latest five runs for the source.
+If production reports `Python parser returned HTTP 404`, inspect Vercel's deployment Functions list and verify `api/rule_parser.py` is included and `APP_URL` points to that deployment. A 403 from the parser indicates a signing/environment mismatch. A direct unsigned browser request returning 403 is expected. Local Python/function integration is tested; authenticated production deployment remains a release-validation step.
 
-## Evaluate using saved reviews
+## What the rules do
+
+`python/corporate_parser.py` contains versioned, inspectable rules. Each suggested field includes a literal source quotation and rule ID. Typed enum/reference/financial validation still runs in the application before suggestions are retained.
+
+The initial vocabulary covers explicit public offers, private-acquisition phrases, mergers, divestitures, spin-offs, rights issues, IPOs, refinancing, bond issues and strategic reviews. Selected Nordic transaction phrases are recognized; broad multilingual semantic understanding is not claimed. Supported party patterns identify named buyers, targets, sellers and borrowers with recognizable company-name forms. Unsupported names or phrasing stay unpopulated rather than being guessed.
+
+Context checks separate:
+
+- committed funding from drawn funding and proposed facilities;
+- future availability from a present financing commitment;
+- event completion from financing completion and expected closing dates;
+- explicit domicile from headquarters or Nordic-sounding names;
+- funding currency from reporting currency, enterprise value, revenue or consideration;
+- exact dates and amounts from ambiguous separators, partial dates and unspecified currency symbols.
+
+Numbers use Python Decimal with explicit scales, not floating-point calculations. Ambiguous `1,500` / `1.500` values remain unassigned. A bond's reported face amount is not automatically recorded as committed or drawn funding; the parser leaves a review note when the target model has no appropriate populated amount field. Month/quarter dates are not converted into invented days. Conflicting statements remove the affected suggestion and create a review note.
+
+The parser deliberately creates no hedge records, inferred exposures, FICC scores or completion probabilities. It does not treat a single approval as overall regulatory clearance. Missing facts, unsupported event language, unusually long sentences and complex multi-party or multi-instrument structures require manual review. This first ruleset will have lower coverage than a general language model on unfamiliar prose; benchmarking makes that visible.
+
+## Review workflow and retained evidence
+
+Full text comes from the article body, never a substituted feed excerpt after retrieval failure. The pilot retains article text/hash/retrieval time, parser version, matched rule IDs, review notes, source-review version and failures. Each applied field creates a linked UNREVIEWED claim. Review provenance is checked against a real completed extraction for the selected source.
+
+Reviewers choose which suggestions to apply; unselected fields remain unchanged. Applying selected values can overwrite current draft values. Include referenced party records when selecting roles/financing. Identity matching is conservative; ambiguous matches become new draft records instead of silently merging instruments or parties. Reopening a hashed article source preserves its actual retrieval time.
+
+No background extraction is enabled, and existing collection/delivery settings are unchanged. Extracting or benchmarking never approves events or sends alerts. Existing rows from an earlier provider-based pilot remain available for historical comparison; new runs use the `python-rules` engine and `python-rules-v1` ruleset. The old excerpt-to-whole-graph `/api/analyze` endpoint remains retired (410).
+
+## Measure agreement and coverage with saved reviews
 
 1. Open **News & reviews → Extraction quality · manual pilot**.
-2. Choose a saved review and click **Extract selected saved case**. This deliberately makes another full-article/provider request; it changes no approved event.
-3. Click **Compare with saved review** on the completed run. The reference is the latest immutable source-review graph for that exact source, not the current event graph after later news updates. Reference graphs and labels are not sent to the provider.
-4. Inspect exact agreement, review-field coverage, unadjudicated suggestions and differences. Run comparisons again after correcting a reference review. Old comparisons remain versioned but are excluded from the current summary.
-5. Compare extractor/model versions on a fixed case set. The summary uses only the latest attempt per source and model/extractor version, and only evaluations matching the current review version within the latest-100 window. It reports source counts and event/programme group counts, so repeated updates are visible rather than treated as independent evidence.
+2. Choose a saved case and click **Extract selected saved case**. It retrieves the current full article and runs Python without AI token usage.
+3. Click **Compare with saved review**. The reference is the latest immutable source-review graph for that exact source, not a later active event graph. No reference answers are fed into the parser.
+4. Inspect exact agreement, populated-review-field coverage, unadjudicated suggestions, per-record differences and failed latest attempts. Compare again after correcting a reference review; stale comparisons are excluded from the current summary.
 
-**Exact agreement** is correct comparable fields / proposed fields with a populated, uniquely aligned review reference. It is agreement with saved reviews, not externally verified factual accuracy. **Coverage** is populated reference fields reached by comparable suggestions / all populated reference fields in the supported extraction schemas. Wrong comparable values reduce agreement but still count as covered. **Unadjudicated** suggestions have no populated reference or no unique matching record; they are not counted as correct or silently discarded. Unknown values do not count as positive reference facts.
+Agreement is correct comparable suggestions / suggestions with a populated, uniquely aligned reference. Coverage is unique populated reference fields reached / populated reference fields in the supported schemas. Wrong comparable values reduce agreement but still count as covered. Missing/unknown references, ambiguous identity matches and duplicate suggestions are not silently counted as correct. Failures are reported separately and cannot be hidden by an earlier successful run.
 
-Failures and in-progress cases are reported separately and cannot be hidden by an earlier successful run. Field agreement/coverage cover scored successful cases; inspect failure counts before judging readiness.
+The summary uses the latest attempt per source/engine/ruleset, current review versions only, within a latest-100 window. It reports source and event/programme group counts. Multiple updates for the same programme must not be treated as independent held-out examples. Record alignment uses names, participants and record-specific identity fields; ambiguous matches need adjudication. Monetary decimals and ISO timestamps are normalized for exact comparison; other text comparisons ignore case/whitespace.
 
-A saved source-review graph can retain facts from earlier announcements. Its populated-field coverage is therefore not a claim of recall against this article alone. Use a source-adjudicated reference set to measure article-level recall before enabling background extraction. Duplicate suggestions for the same reference field are reported as unadjudicated rather than counted repeatedly.
+These are saved-review agreement metrics, not independent proof of factual accuracy. A review graph may retain facts from earlier announcements, so its coverage is not article-level recall. Older reviews may also predate retained full-text snapshots: current article text can have changed. New reviews may be influenced by applied suggestions. Use a source-adjudicated, frozen evaluation set to judge extraction readiness.
 
-Reference alignment is conservative: entity legal names, party role/entity, instrument type/borrower, economic-leg participants/type, workstream type, condition type/authority and Nordic country/entity. Ambiguous or newly named records need human adjudication. ISO timestamps and exact monetary decimals are normalized for comparison; other text comparisons ignore case/whitespace. Semantic paraphrases can therefore be reported as differences.
+Start with 10–20 varied cases. For each failure/omission, preserve a representative quotation, correct output and regression test. Improve a named rule, bump the ruleset version when behavior changes, and compare old/new results on a held-out set grouped by event/programme. Do not tune rules against held-out answers. User corrections remain reference labels and audit; the parser does not silently learn or rewrite its own rules.
 
-Older reviews usually predate full-text snapshots. Such evaluations are labelled retrospective: the current article may differ from what the reviewer originally saw. Extraction before approval has a different limitation: applied suggestions may influence review agreement. Inspect both; neither alone is an independent accuracy claim.
+There is no background activation switch or automatic pass threshold. Background parsing requires a later explicitly reviewed change after quality and failure handling are satisfactory.
 
-Start with 10–20 varied saved cases (acquisition, disposal, bid, financing, completion update and reporting/no-event cases). Adjudicate mismatches and missing-reference facts, then freeze a held-out set by event/programme group before improving the extractor. Do not tune prompts using the held-out answers. Compare per-field and event-type failures as well as overall coverage. Record IDs, article hashes, source-review versions and extractor/model versions remain available for reproducibility.
+## Limits and verification
 
-Background extraction requires a future explicitly reviewed change after the held-out results and failure handling are satisfactory. There is no activation button or automatic pass threshold in this release.
+Article retrieval permits public Cision announcement URLs only, checks redirects and excludes off-site links/attachments. Limits: 15-second / 2 MB page fetch, 80,000-character article, 25 records / 60 fields, 12–800 character literal quotation per field. The pilot retains one active run per source and a 20-run/hour reviewer limit. These protect server resources, not AI spending. A stale worker expires on the next manual retry.
 
-## Boundaries and retained evidence
-
-Supported suggestions cover corporate-event classifications/dates, parties and roles, explicit Nordic connections, funding instruments/rates/currencies/amounts, cash flows, independent workstream states and conditions/deadlines. Hedge products, inferred exposures, FICC scores and probabilities are excluded. A committed loan is not automatically a draw; enterprise value is not a cash leg; reporting currency or domicile does not establish transaction/funding currency; one completed workstream does not establish overall completion. Month/quarter dates are not forced into invented days where the target field lacks a matching date-precision attribute.
-
-Full-text fetches allow public Cision announcement URLs only, validate every redirect, do not follow attachments or off-site links, and enforce 15-second / 2 MB page limits. Article text is capped at 80,000 characters without silent truncation. Suggestions are capped at 25 records / 60 fields; each proposed field needs a 12–800 character exact quotation. Schema, enum, reference and financial consistency checks run before suggestions are retained. Failures are recorded separately; they do not erase drafts or approve events. Extraction may miss facts even when all validations pass.
-
-Pin a provider model snapshot for controlled comparisons when available. The retained suggestion artifact includes the provider-reported model ID and request hash; an unpinned model alias can change behind the same configured name.
-
-The provider sees the normalized public article text, publication timestamp and fixed vocabulary, not prior reviews or private model graphs. Full source snapshots, text, hashes, parser version, provider model name, extractor version, quotations/offsets and failures are retained in server-written tables. Invited reviewers can read them; ordinary pilot members cannot. The pilot limits requests to 20 per reviewer per hour and one active extraction per source. A timed-out source lock expires on a later manual retry.
-
-This is an evaluated extraction workflow, not model training. Saved corrections provide reference labels and existing field-level audit; changing model weights or learning an extraction policy from those labels is not implemented here. Existing relevance-ranking learning remains separate.
+Run `python -m unittest discover -s python -p 'test_*.py'`, `npm test`, `npm run build`, API/pilot checks and desktop/mobile Playwright tests. Python tests cover realistic positives and counterexamples, Decimal/date handling, negation, quote/rule provenance and the signed HTTP function. Node tests execute the actual Python parser with no AI key and assert that no provider request occurs. Cloud tests use the signed function contract; production validation still requires your authenticated Vercel/Supabase pilot.

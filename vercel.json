@@ -1,3 +1,13 @@
 {
-  "crons": [{ "path": "/api/jobs/run", "schedule": "0 6 * * *" }]
+  "crons": [
+    {
+      "path": "/api/jobs/run",
+      "schedule": "0 6 * * *"
+    }
+  ],
+  "functions": {
+    "api/rule_parser.py": {
+      "includeFiles": "python/**"
+    }
+  }
 }

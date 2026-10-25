@@ -69,4 +69,4 @@ The next priority is extracting substantially more from Cision articles into thi
 4. Present suggested changes beside the current approved values for review. Treat FICC exposure and product recommendations as separate hypotheses; never infer a funding currency or create hedges solely from domicile.
 5. Measure field precision, coverage, enum errors and reviewer correction/time by event type on held-out cases. Use corrections to improve prompts and comparable-case suggestions; field audit retention alone is not automatic model training. Enable background extraction only after these checks, keeping approval and delivery gates.
 
-This release fixes validation and the review interface; it does not activate unattended extraction or notifications.
+This release fixes validation and the review interface; it does not activate unattended extraction or notifications. The subsequent [Python extraction pilot](evidence-extraction.md) supersedes the earlier AI-provider proposal and uses deterministic rules without AI tokens.

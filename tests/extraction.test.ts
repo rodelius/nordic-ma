@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 import {parseArticle,retrieveArticle,articleUrl} from '../lib/article-source';
 import {validateExtraction,applyExtraction,suggestedGraph,EXTRACTION_VERSION,validateSelectedFields} from '../lib/extraction';
-import {extractArticle} from '../lib/extraction-provider';
+import {extractArticle,pythonRules,parserSignature} from '../lib/extraction-engine';
 import {evaluateExtraction,summarizeEvaluations} from '../lib/extraction-evaluation';
 import {blankCorporateEvent,corporateState} from '../lib/corporate-events';
 const source={id:'evidence-source',headline:'Nordic Buyer offers for Target',url:'https://news.cision.com/nordic-buyer/r/offer,c123',published_at:'2026-10-25T10:00:00Z',source:'Cision'};
@@ -39,9 +39,15 @@ test('evaluation matches independent record IDs and reports agreement, coverage 
  const extraction=validateExtraction(raw(),article,source,runId),review=suggestedGraph(source,extraction,article,runId);review.records.Entity[0].entity_id='reviewed-buyer';review.records.EventParty[0].entity_id='reviewed-buyer';review.records.FundingInstrument[0].committed_amount='1000000.00';corporateState(review).disposition='ACTIVE';const repeated=structuredClone(extraction);repeated.records.push({...repeated.records[1],key:'buyer_duplicate'});const deduped=evaluateExtraction(repeated,review);assert.equal(deduped.compared,8);assert.equal(deduped.unadjudicated,1);const baseline=evaluateExtraction(extraction,review);assert.equal(baseline.correct,8);assert.equal(baseline.compared,8);assert(baseline.coverage!<1);assert.equal(baseline.unadjudicated,0);
  review.records.FundingInstrument[0].currency='SEK';const changed=evaluateExtraction(extraction,review);assert.equal(changed.correct,7);assert(changed.differences.some(d=>d.field==='currency'));review.records.Entity=[];const unmatched=evaluateExtraction(extraction,review);assert(unmatched.unadjudicated>0);assert(unmatched.coverage!<baseline.coverage!);
 });
-test('provider receives only source text and fixed vocabulary, never the saved review reference',async()=>{
- const previous=process.env.AI_API_KEY;process.env.AI_API_KEY='test-only';try{let payload='';const mock=(async(_url,init)=>{payload=String(init?.body);return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify(raw())}}]});}) as typeof fetch;const result=await extractArticle(article,source,runId,mock);assert(result.records.length);const request=JSON.parse(payload);assert.equal(JSON.parse(request.messages[1].content).articleText,article.text);assert(!request.messages[1].content.includes('source_snapshot'));assert(!request.messages[1].content.includes('previous_graph'));assert(request.messages[0].content.includes('untrusted source data'));
- }finally{if(previous===undefined)delete process.env.AI_API_KEY;else process.env.AI_API_KEY=previous;}
+test('Python extraction needs no AI key, performs no provider requests and validates its evidence',async()=>{
+ const prior={vercel:process.env.VERCEL,key:process.env.AI_API_KEY};delete process.env.VERCEL;delete process.env.AI_API_KEY;
+ try{const noNetwork=(async()=>{throw Error('A parser must not contact an AI provider');}) as typeof fetch;const result=await extractArticle(article,source,runId,noNetwork);assert.equal(result.engineName,'python-rules');assert.equal(result.version,EXTRACTION_VERSION);assert(result.records.some(r=>r.kind==='FundingInstrument'&&r.fields.currency.value==='EUR'));assert(result.records.every(r=>Object.values(r.fields).every(f=>f.ruleId&&article.text.includes(f.quote))));assert.equal(result.requestHash.length,64);
+ }finally{if(prior.vercel===undefined)delete process.env.VERCEL;else process.env.VERCEL=prior.vercel;if(prior.key===undefined)delete process.env.AI_API_KEY;else process.env.AI_API_KEY=prior.key;}
+});
+test('Vercel bridge sends signed text to its own Python function with no credentials in the request',async()=>{
+ const previous={vercel:process.env.VERCEL,app:process.env.APP_URL,secret:process.env.SUPABASE_SECRET_KEY};delete process.env.VERCEL;const raw=await pythonRules(article.text);
+ try{process.env.VERCEL='1';process.env.APP_URL='https://pilot.example.com';process.env.SUPABASE_SECRET_KEY='test-only';let called=false;const mock=(async(url,init)=>{called=true;assert.equal(String(url),'https://pilot.example.com/api/rule_parser');const body=String(init?.body),headers=new Headers(init?.headers),time=headers.get('X-Parser-Time')!;assert.equal(JSON.parse(body).text,article.text);assert(!body.includes('test-only'));assert.equal(headers.get('X-Parser-Signature'),parserSignature(body,time,'test-only'));assert(!headers.has('Authorization'));return Response.json(raw);}) as typeof fetch;const result=await extractArticle(article,source,runId,mock);assert(called);assert.equal(result.engineName,'python-rules');await assert.rejects(extractArticle(article,source,runId,(async()=>Response.json({records:[],ruleVersion:'old'})) as typeof fetch),/version mismatch/);
+ }finally{for(const [key,value] of [['VERCEL',previous.vercel],['APP_URL',previous.app],['SUPABASE_SECRET_KEY',previous.secret]]){if(value===undefined)delete process.env[key!];else process.env[key!]=value;}}
 });
 test('migration 010 keeps extraction separate, reviewer-readable and server-write-only',async()=>{
  const db=new PGlite();const uid='00000000-0000-0000-0000-000000000001',reader='00000000-0000-0000-0000-000000000002';try{

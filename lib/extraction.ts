@@ -1,7 +1,7 @@
 import {EVENT_SCHEMA,blankCorporateEvent,parseCorporateEventModel,type CorporateEventModel,type EventRecord} from './corporate-events';
 import type {ArticleSnapshot} from './article-source';
 import {populated,display} from './manual-review';
-export const EXTRACTION_VERSION='evidence-fields-v1';
+export const EXTRACTION_VERSION='python-rules-v1';
 export const EXTRACT_FIELDS:Record<string,string[]>={
  CorporateEvent:['title','event_type_id','lifecycle_phase','disposition','outcome','legal_structure','expected_close_start','expected_close_end','actual_completion_at','economic_purpose','execution_route','ownership_outcome','ownership_transition','financing_structure','initiation','board_support','offer_obligation','scope','consideration_types','separation_method'],
  Entity:['legal_name','LEI','registration_number','domicile','reporting_currency','entity_type'],
@@ -12,12 +12,12 @@ export const EXTRACT_FIELDS:Record<string,string[]>={
  WorkstreamInstance:['workstream_type','status'],
  Condition:['condition_type','authority_or_counterparty','state','waiver_permitted','jurisdiction','deadline','approval_expiry'],
 };
-export type EvidenceField={value:unknown;quote:string;start:number;end:number};
+export type EvidenceField={value:unknown;quote:string;start:number;end:number;ruleId?:string};
 export type ExtractedRecord={key:string;kind:string;fields:Record<string,EvidenceField>};
-export type Extraction={version:string;records:ExtractedRecord[];providerModel?:string;requestHash?:string};
+export type Extraction={version:string;records:ExtractedRecord[];providerModel?:string;engineName?:string;notes?:string[];rulesMatched?:string[];requestHash?:string};
 const keyPattern=/^[a-z][a-z0-9_-]{0,49}$/;
 export function validateExtraction(raw:unknown,article:ArticleSnapshot,source:{id:string;headline:string;url:string;published_at:string;source?:string},runId:string):Extraction{
- if(!raw||typeof raw!=='object'||!Array.isArray((raw as {records:unknown}).records))throw Error('AI response must contain evidence-linked records');
+ if(!raw||typeof raw!=='object'||!Array.isArray((raw as {records:unknown}).records))throw Error('Parser response must contain evidence-linked records');
  const rows=(raw as {records:unknown[]}).records;if(rows.length>25)throw Error('Too many proposed records');const keys=new Set<string>();let count=0;
  const records=rows.map(value=>{
   if(!value||typeof value!=='object')throw Error('Invalid proposed record');const r=value as ExtractedRecord;
@@ -26,7 +26,7 @@ export function validateExtraction(raw:unknown,article:ArticleSnapshot,source:{i
   for(const [field,untrusted] of Object.entries(r.fields)){
    if(!EXTRACT_FIELDS[r.kind].includes(field)||!untrusted||typeof untrusted!=='object')throw Error('Unsupported extraction field: '+r.kind+'.'+field);
    const {value,quote}=untrusted;if(!populated(value))continue;if(typeof quote!=='string'||quote.trim().length<12||quote.length>800)throw Error('Each proposed field needs a 12–800 character article quotation');
-   const start=article.text.indexOf(quote);if(start<0)throw Error('Evidence quotation does not occur in the retrieved article');if(++count>60)throw Error('Too many proposed fields');fields[field]={value,quote,start,end:start+quote.length};
+   const start=article.text.indexOf(quote);if(start<0)throw Error('Evidence quotation does not occur in the retrieved article');if(++count>60)throw Error('Too many proposed fields');const ruleId=typeof untrusted.ruleId==='string'&&/^[a-z0-9-]{1,80}$/.test(untrusted.ruleId)?untrusted.ruleId:undefined;fields[field]={value,quote,start,end:start+quote.length,...(ruleId?{ruleId}:{})};
   }
   if(!Object.keys(fields).length)throw Error('Empty proposed record');return {key:r.key,kind:r.kind,fields};
  });

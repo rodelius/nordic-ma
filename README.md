@@ -8,7 +8,7 @@ The supplied ontology contains 40 event templates, 526 milestone IDs and 24 logi
 
 ## Run in a browser
 
-GitHub Codespaces installs dependencies through the existing devcontainer. Run `npm run dev`, then open forwarded port 3000. `node .devcontainer/start.mjs` starts once and waits for canonical API readiness. Node 24 is required. Local mode uses explicitly synthetic records in its own canonical SQLite store.
+GitHub Codespaces installs dependencies through the existing devcontainer. Run `npm run dev`, then open forwarded port 3000. `node .devcontainer/start.mjs` starts once and waits for canonical API readiness. Node 24 and Python 3 are required. Local mode uses explicitly synthetic records in its own canonical SQLite store.
 
 ## Production
 
@@ -21,7 +21,7 @@ Existing authentication, invited membership, reviewer permissions, Cision source
 - `GET /api/corporate-events`: canonical models and source timeline.
 - `POST /api/corporate-events`: authenticated local/demo structured ingestion; pilot writes use reviewer source approval.
 - `/api/reviews`: private drafts and atomic reviewer approvals/corrections.
-- `/api/extraction`: reviewer-triggered full-text extraction, retained evidence and saved-review evaluation.
+- `/api/extraction`: reviewer-triggered Python rule parsing, retained evidence and saved-review evaluation (no AI tokens).
 - `/api/analyze`: retired excerpt-to-whole-graph extraction (HTTP 410).
 - `GET /api/feedback/export`: reviewer-only, cursor-paginated field-level labels with source and programme/model context.
 - `/api/pilot`, `/api/learning`, `/api/push`, `/api/jobs/run`: gated source, learning and delivery controls.
@@ -45,4 +45,4 @@ Manual-review upgrade: apply migration 008 after 007 and follow [task-based revi
 
 Timestamp/mobile follow-up: installations through 008 apply only migration 009; see the [review guide](docs/manual-review.md#timestamp-and-mobile-follow-up-migration-009).
 
-Full-article extraction pilot: follow the [configuration, review and benchmark guide](docs/evidence-extraction.md). Approval remains manual; background extraction stays off.
+Python full-article extraction pilot (no AI API key or tokens): follow the [configuration, review and benchmark guide](docs/evidence-extraction.md). Approval remains manual; background extraction stays off.

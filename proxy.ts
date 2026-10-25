@@ -8,6 +8,8 @@ export async function proxy(request:NextRequest){
  if(pilotMode()==='demo')return NextResponse.next();
  const config=pilotConfig();
  const path=request.nextUrl.pathname;
+ // The Python function validates a short-lived, body-bound internal signature itself.
+ if(path==='/api/rule_parser')return privateResponse(NextResponse.next());
  if(path==='/api/jobs/run')return jobsAuthorized(request)?privateResponse(NextResponse.next()):privateResponse(NextResponse.json({error:'Job authorization required'},{status:401}));
  if(path==='/login'||path==='/auth/callback'||path==='/auth/signout')return privateResponse(NextResponse.next());
  let response=NextResponse.next({request});
