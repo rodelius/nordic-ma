@@ -12,7 +12,7 @@ GitHub Codespaces installs dependencies through the existing devcontainer. Run `
 
 ## Production
 
-Use the existing Supabase/Vercel pilot. This version requires migrations 001–008. Installations through 007 apply only the additive migration 008, following the [manual-review rollout](docs/manual-review.md). Installations through 006 must first complete 007. **007 is a breaking cutover:** it archives legacy data, retires old writes and removes old active fields. Back up and coordinate database migration with deployment using the [cutover guide](docs/corporate-event-model.md). No production migration is run by preparing this repository.
+Use the existing Supabase/Vercel pilot. This version requires migrations 001–009. Installations through 008 apply only the additive migration 009; installations through 007 apply 008 followed by 009. Follow the [manual-review rollout](docs/manual-review.md). Installations through 006 must first complete 007. **007 is a breaking cutover:** it archives legacy data, retires old writes and removes old active fields. Back up and coordinate database migration with deployment using the [cutover guide](docs/corporate-event-model.md). No production migration is run by preparing this repository.
 
 Existing authentication, invited membership, reviewer permissions, Cision source collection and push delivery gates remain. Collection and delivery default off. `LEARNING_ENABLED=true` enables the separate evaluated relevance-ranking workflow; field-level review audit is retained independently.
 
@@ -40,3 +40,5 @@ CI=true CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chr
 Historical migration regressions remain under `tests/legacy-support`; the application does not import the old Deal model. Earlier rollout documents describe earlier releases; the corporate-event guide covers the model cutover and the manual-review guide defines the current review policy.
 
 Manual-review upgrade: apply migration 008 after 007 and follow [task-based review rollout](docs/manual-review.md). This version uses compact task groups, optional evidence/nexus, core-only approval and product-aware currency selection.
+
+Timestamp/mobile follow-up: installations through 008 apply only migration 009; see the [review guide](docs/manual-review.md#timestamp-and-mobile-follow-up-migration-009).
